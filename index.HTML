@@ -1,0 +1,3892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntelliChain | AI-Driven AgriTech Logistics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #1d1d1f;
+            --bg-tertiary: #2d2d2f;
+            --bg-card: #1a1a1c;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --text-tertiary: #6e6e73;
+            --accent-blue: #0071e3;
+            --accent-green: #30d158;
+            --accent-orange: #ff9f0a;
+            --accent-red: #ff453a;
+            --accent-purple: #bf5af2;
+            --border-color: #424245;
+            --gradient-primary: linear-gradient(135deg, #0071e3, #30d158);
+            --gradient-secondary: linear-gradient(135deg, #bf5af2, #ff453a);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(29, 29, 31, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 0 2rem;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            color: var(--text-primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent-blue);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.6rem 1.4rem;
+            border-radius: 980px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Language Selector */
+        .language-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .language-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .language-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            min-width: 140px;
+            z-index: 1000;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .language-dropdown.active {
+            display: block;
+        }
+
+        .language-option {
+            padding: 0.8rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: block;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .language-option:hover {
+            background: var(--bg-tertiary);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 80px auto 0;
+            padding: 2rem;
+        }
+
+        .view-content {
+            display: none;
+        }
+
+        .view-content.active {
+            display: block;
+        }
+
+        /* Crop Selector Styles */
+        .crop-selector-container {
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .crop-selector {
+            position: relative;
+            display: inline-block;
+            width: 300px;
+        }
+
+        .crop-selector-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .crop-selector-btn:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 113, 227, 0.15);
+        }
+
+        .crop-selector-btn.active {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+        }
+
+        .crop-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .crop-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-top: 8px;
+            z-index: 1000;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            overflow: hidden;
+            animation: dropdownSlide 0.3s ease-out;
+        }
+
+        .crop-dropdown.active {
+            display: block;
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .crop-option {
+            padding: 1rem 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .crop-option:last-child {
+            border-bottom: none;
+        }
+
+        .crop-option:hover {
+            background: var(--bg-tertiary);
+            transform: translateX(5px);
+        }
+
+        .crop-option.active {
+            background: rgba(0, 113, 227, 0.1);
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .crop-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .crop-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .crop-details {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Animation for content updates */
+        .vital-card-sidebyside, .optimal-card-sidebyside, .alert-card, .solution-card {
+            transition: all 0.4s ease;
+        }
+
+        .content-updating {
+            opacity: 0.7;
+            transform: scale(0.98);
+        }
+
+        .content-updated {
+            animation: contentUpdate 0.6s ease;
+        }
+
+        @keyframes contentUpdate {
+            0% {
+                opacity: 0.7;
+                transform: scale(0.98);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.01);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Status badges animations */
+        .status-optimal, .status-high, .status-warning, .status-within-range, .status-out-of-range {
+            transition: all 0.3s ease;
+        }
+
+        .status-changing {
+            animation: statusPulse 0.6s ease;
+        }
+
+        @keyframes statusPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Hero section with crop info */
+        .hero-section-with-crop {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding: 2rem 0;
+            gap: 2rem;
+        }
+
+        .hero-content {
+            flex: 1;
+        }
+
+        .crop-selector-wrapper {
+            width: 300px;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            font-weight: 400;
+        }
+
+        /* Freshness Timeline Section */
+        .freshness-timeline-section {
+            margin-bottom: 2rem;
+        }
+
+        .freshness-timeline-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.8rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .freshness-timeline-container:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .freshness-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .freshness-badge {
+            background: var(--accent-green);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .freshness-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent-green);
+        }
+
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .timeline-bar {
+            height: 40px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .timeline-segment {
+            height: 100%;
+            display: inline-block;
+            position: absolute;
+            transition: all 0.5s ease;
+        }
+
+        .timeline-excellent {
+            background: linear-gradient(90deg, var(--accent-green), #4cd964);
+            left: 0;
+            border-radius: 20px 0 0 20px;
+        }
+
+        .timeline-medium {
+            background: linear-gradient(90deg, var(--accent-orange), #ffb340);
+            border-radius: 0;
+        }
+
+        .timeline-low {
+            background: linear-gradient(90deg, var(--accent-red), #ff6b57);
+            border-radius: 0 20px 20px 0;
+        }
+
+        .current-time-marker {
+            position: absolute;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: white;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            z-index: 10;
+            transition: left 1s ease;
+        }
+
+        .current-time-marker::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -6px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .timeline-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+
+        .timeline-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .label-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .label-time {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .timeline-status {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .current-status {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .status-excellent {
+            background: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        .status-medium {
+            background: var(--accent-orange);
+            box-shadow: 0 0 10px var(--accent-orange);
+        }
+
+        .status-low {
+            background: var(--accent-red);
+            box-shadow: 0 0 10px var(--accent-red);
+        }
+
+        /* Vitals Section */
+        .vitals-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title:before {
+            content: '';
+            width: 5px;
+            height: 20px;
+            background: var(--accent-blue);
+            border-radius: 3px;
+        }
+
+        /* Compact Vitals Grid - Side by Side Layout */
+        .vitals-grid-sidebyside {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .vital-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            align-items: stretch;
+        }
+
+        .vital-card-sidebyside {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 1.4rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 160px;
+        }
+
+        .vital-card-sidebyside:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .vital-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .vital-icon-sidebyside {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: var(--bg-secondary);
+        }
+
+        .vital-info {
+            flex: 1;
+        }
+
+        .vital-title-sidebyside {
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .vital-value-sidebyside {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .vital-status-sidebyside {
+            padding: 0.4rem 0.8rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .status-optimal { 
+            background: rgba(48, 209, 88, 0.1); 
+            color: var(--accent-green); 
+            border: 1px solid rgba(48, 209, 88, 0.3);
+        }
+        
+        .status-high { 
+            background: rgba(255, 69, 58, 0.1); 
+            color: var(--accent-red); 
+            border: 1px solid rgba(255, 69, 58, 0.3);
+        }
+
+        .status-warning { 
+            background: rgba(255, 159, 10, 0.1); 
+            color: var(--accent-orange); 
+            border: 1px solid rgba(255, 159, 10, 0.3);
+        }
+
+        .vital-chart-sidebyside {
+            height: 45px;
+            margin-top: 0.8rem;
+        }
+
+        .optimal-card-sidebyside {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 1.4rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 160px;
+        }
+
+        .optimal-card-sidebyside:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-green);
+        }
+
+        .optimal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .optimal-icon-sidebyside {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: rgba(48, 209, 88, 0.2);
+            color: var(--accent-green);
+        }
+
+        .optimal-info {
+            flex: 1;
+        }
+
+        .optimal-title-sidebyside {
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .optimal-value-sidebyside {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            color: var(--accent-green);
+        }
+
+        .optimal-range {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .optimal-status-sidebyside {
+            padding: 0.4rem 0.8rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .status-within-range { 
+            background: rgba(48, 209, 88, 0.1); 
+            color: var(--accent-green); 
+            border: 1px solid rgba(48, 209, 88, 0.3);
+        }
+        
+        .status-out-of-range { 
+            background: rgba(255, 69, 58, 0.1); 
+            color: var(--accent-red); 
+            border: 1px solid rgba(255, 69, 58, 0.3);
+        }
+
+        .status-attention { 
+            background: rgba(255, 159, 10, 0.1); 
+            color: var(--accent-orange); 
+            border: 1px solid rgba(255, 159, 10, 0.3);
+        }
+
+        .optimal-suggestion {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            line-height: 1.4;
+        }
+
+        /* SOS Alerts Section */
+        .alerts-section {
+            margin-bottom: 2rem;
+        }
+
+        .alerts-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.8rem;
+            border: 1px solid var(--accent-red);
+            box-shadow: 0 0 20px rgba(255, 69, 58, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alerts-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 69, 58, 0.05), transparent);
+        }
+
+        .alerts-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .sos-badge {
+            background: var(--accent-red);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse-alert 2s infinite;
+        }
+
+        @keyframes pulse-alert {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 69, 58, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 69, 58, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 69, 58, 0); }
+        }
+
+        .alerts-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent-red);
+        }
+
+        .alerts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .alert-card {
+            background: rgba(255, 69, 58, 0.1);
+            border-radius: 12px;
+            padding: 1.4rem;
+            border: 1px solid rgba(255, 69, 58, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .alert-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 69, 58, 0.15);
+            box-shadow: 0 5px 15px rgba(255, 69, 58, 0.2);
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.8rem;
+        }
+
+        .alert-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            background: rgba(255, 69, 58, 0.2);
+            color: var(--accent-red);
+        }
+
+        .alert-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--accent-red);
+        }
+
+        .alert-message {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .alert-action {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-red);
+        }
+
+        /* AI Solutions Section */
+        .solutions-section {
+            margin-bottom: 2rem;
+        }
+
+        .solutions-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.8rem;
+            border: 1px solid var(--accent-blue);
+            box-shadow: 0 0 20px rgba(0, 113, 227, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .solutions-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 113, 227, 0.05), transparent);
+        }
+
+        .solutions-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .solutions-badge {
+            background: var(--accent-blue);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .solutions-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .solution-card {
+            background: rgba(0, 113, 227, 0.1);
+            border-radius: 12px;
+            padding: 1.4rem;
+            border: 1px solid rgba(0, 113, 227, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .solution-card:hover {
+            transform: translateY(-3px);
+            background: rgba(0, 113, 227, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 113, 227, 0.2);
+        }
+
+        .solution-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .solution-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            background: rgba(0, 113, 227, 0.2);
+            color: var(--accent-blue);
+        }
+
+        .solution-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--accent-blue);
+        }
+
+        .solution-steps {
+            margin-bottom: 1rem;
+        }
+
+        .solution-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 0.8rem;
+        }
+
+        .step-number {
+            background: var(--accent-blue);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .solution-result {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.8rem;
+            background: rgba(48, 209, 88, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(48, 209, 88, 0.3);
+        }
+
+        .result-icon {
+            color: var(--accent-green);
+            font-size: 1rem;
+        }
+
+        .result-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* AI Risk Analysis Section */
+        .risk-analysis-section {
+            margin-bottom: 2rem;
+        }
+
+        .risk-analysis-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--accent-purple);
+            box-shadow: 0 0 20px rgba(191, 90, 242, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .risk-analysis-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(191, 90, 242, 0.05), transparent);
+        }
+
+        .risk-analysis-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .risk-badge {
+            background: var(--gradient-secondary);
+            color: white;
+            padding: 0.9rem 1.4rem;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 600;
+        }
+
+        .risk-analysis-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent-purple);
+        }
+
+        .risk-analysis-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .impact-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .impact-card {
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .impact-card:hover {
+            transform: scale(1.03);
+        }
+
+        .impact-before { 
+            background: rgba(255, 69, 58, 0.05);
+            border-color: rgba(255, 69, 58, 0.3);
+        }
+        
+        .impact-after { 
+            background: rgba(48, 209, 88, 0.05);
+            border-color: rgba(48, 209, 88, 0.3);
+        }
+
+        .impact-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .impact-before .impact-value { color: var(--accent-red); }
+        .impact-after .impact-value { color: var(--accent-green); }
+
+        .impact-label {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .business-impact {
+            background: rgba(0, 113, 227, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-blue);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .business-impact-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .business-impact-icon {
+            color: var(--accent-blue);
+            font-size: 1.4rem;
+        }
+
+        .business-impact-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .business-impact-content {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .business-impact-content p {
+            margin-bottom: 0.8rem;
+        }
+
+        .business-impact-content strong {
+            color: var(--text-primary);
+        }
+
+        .savings-highlight {
+            background: rgba(48, 209, 88, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(48, 209, 88, 0.3);
+            margin-top: 0.5rem;
+        }
+
+        /* Shipment Info Section */
+        .shipment-info-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.8rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .shipment-info-section:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .shipment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .shipment-id {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .shipment-route {
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .pulse {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(48, 209, 88, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(48, 209, 88, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(48, 209, 88, 0); }
+        }
+
+        .shipment-details-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.2rem;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 1.2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Storage Info Section */
+        .storage-info-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.8rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .storage-info-section:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .storage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .storage-id {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .storage-status {
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .storage-details-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.2rem;
+        }
+
+        /* Full Width Map Section */
+        .full-width-section {
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .map-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.8rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .map-section:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .section-title-map {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        #map {
+            height: 450px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 2.5rem 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.8rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--text-primary);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 2.5rem;
+            padding-top: 1.8rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-tertiary);
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .vital-row {
+                grid-template-columns: 1fr;
+            }
+            .alerts-grid, .solutions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .risk-analysis-content {
+                grid-template-columns: 1fr;
+            }
+            .shipment-details-grid, .storage-details-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .hero-section-with-crop {
+                flex-direction: column;
+            }
+            .crop-selector-wrapper {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            .alerts-grid, .solutions-grid {
+                grid-template-columns: 1fr;
+            }
+            .shipment-details-grid, .storage-details-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                IntelliChain
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link active" data-view="transport" data-i18n="nav.transport">Transport</a>
+                <a href="#" class="nav-link" data-view="warehouse" data-i18n="nav.warehouse">Warehouse</a>
+                <div class="language-selector">
+                    <button class="language-btn">
+                        <i class="fas fa-globe"></i>
+                        <span id="current-language">English</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="language-dropdown">
+                        <div class="language-option" data-lang="en">English</div>
+                        <div class="language-option" data-lang="hi">हिन्दी (Hindi)</div>
+                        <div class="language-option" data-lang="te">తెలుగు (Telugu)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-outline" data-i18n="nav.signIn">Sign In</button>
+                <button class="btn btn-primary" data-i18n="nav.getStarted">Get Started</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Transport View -->
+        <div id="transport-view" class="view-content active">
+            <!-- Updated Hero Section with Crop Selector -->
+            <section class="hero-section-with-crop">
+                <div class="hero-content">
+                    <h1 class="hero-title" data-i18n="transport.heroTitle">Intelligent Supply Chain</h1>
+                    <p class="hero-subtitle" data-i18n="transport.heroSubtitle">AI-driven logistics platform reducing food waste through real-time monitoring and predictive analytics</p>
+                </div>
+                <div class="crop-selector-wrapper">
+                    <div class="crop-selector-container">
+                        <div class="crop-selector">
+                            <button class="crop-selector-btn" id="transportCropSelectorBtn">
+                                <div style="display: flex; align-items: center;">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-apple-alt"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name" id="transportCurrentCropName">Shimla Apples</div>
+                                        <div class="crop-details" id="transportCurrentCropDetails">Optimal conditions active</div>
+                                    </div>
+                                </div>
+                                <i class="fas fa-chevron-down" id="transportCropChevron"></i>
+                            </button>
+                            <div class="crop-dropdown" id="transportCropDropdown">
+                                <div class="crop-option active" data-crop="apples">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-apple-alt"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name">Shimla Apples</div>
+                                        <div class="crop-details">0-4°C • 90-95% Humidity</div>
+                                    </div>
+                                </div>
+                                <div class="crop-option" data-crop="bananas">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-banana"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name">Cavendish Bananas</div>
+                                        <div class="crop-details">13-15°C • 85-95% Humidity</div>
+                                    </div>
+                                </div>
+                                <div class="crop-option" data-crop="tomatoes">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-seedling"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name">Cherry Tomatoes</div>
+                                        <div class="crop-details">10-13°C • 90-95% Humidity</div>
+                                    </div>
+                                </div>
+                                <div class="crop-option" data-crop="potatoes">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-potato"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name">Fresh Potatoes</div>
+                                        <div class="crop-details">4-8°C • 85-90% Humidity</div>
+                                    </div>
+                                </div>
+                                <div class="crop-option" data-crop="grapes">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-grapes"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name">Thompson Grapes</div>
+                                        <div class="crop-details">-1 to 0°C • 90-95% Humidity</div>
+                                    </div>
+                                </div>
+                                <div class="crop-option" data-crop="berries">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-berry"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name">Fresh Berries</div>
+                                        <div class="crop-details">0-2°C • 90-95% Humidity</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Freshness Timeline Section -->
+            <div class="freshness-timeline-section">
+                <div class="freshness-timeline-container">
+                    <div class="freshness-header">
+                        <div class="freshness-badge">
+                            <i class="fas fa-clock"></i>
+                            <span>FRESHNESS TIMELINE</span>
+                        </div>
+                        <div class="freshness-title">Product Quality Degradation Forecast</div>
+                    </div>
+                    
+                    <div class="timeline-container">
+                        <div class="timeline-bar">
+                            <div class="timeline-segment timeline-excellent" id="transportExcellentSegment"></div>
+                            <div class="timeline-segment timeline-medium" id="transportMediumSegment"></div>
+                            <div class="timeline-segment timeline-low" id="transportLowSegment"></div>
+                            <div class="current-time-marker" id="transportCurrentMarker"></div>
+                        </div>
+                        <div class="timeline-labels">
+                            <div class="timeline-label">
+                                <div class="label-title">Excellent</div>
+                                <div class="label-time" id="transportExcellentTime">0-24h</div>
+                            </div>
+                            <div class="timeline-label">
+                                <div class="label-title">Medium</div>
+                                <div class="label-time" id="transportMediumTime">24-72h</div>
+                            </div>
+                            <div class="timeline-label">
+                                <div class="label-title">Low</div>
+                                <div class="label-time" id="transportLowTime">72-120h</div>
+                            </div>
+                        </div>
+                        <div class="timeline-status">
+                            <div class="current-status" id="transportCurrentStatus">
+                                <div class="status-dot status-excellent"></div>
+                                <span id="transportStatusText">Current: Excellent Quality (12 hours elapsed)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vitals Section -->
+            <div class="vitals-section">
+                <div class="section-title" data-i18n="transport.vitalsTitle">Live Vitals Monitoring</div>
+                
+                <div class="vitals-grid-sidebyside">
+                    <!-- Temperature Row -->
+                    <div class="vital-row">
+                        <div class="vital-card-sidebyside">
+                            <div class="vital-header">
+                                <div class="vital-icon-sidebyside" style="color: var(--accent-blue);">
+                                    <i class="fas fa-thermometer-half"></i>
+                                </div>
+                                <div class="vital-info">
+                                    <div class="vital-title-sidebyside" data-i18n="transport.temperature">Temperature</div>
+                                    <div class="vital-value-sidebyside" id="transportTempValue">13.5°C</div>
+                                    <span class="vital-status-sidebyside status-high" id="transportTempStatus" data-i18n="transport.status.high">High</span>
+                                </div>
+                            </div>
+                            <div class="vital-chart-sidebyside">
+                                <canvas id="tempChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="optimal-card-sidebyside">
+                            <div class="optimal-header">
+                                <div class="optimal-icon-sidebyside">
+                                    <i class="fas fa-snowflake"></i>
+                                </div>
+                                <div class="optimal-info">
+                                    <div class="optimal-title-sidebyside" id="transportOptimalTempTitle" data-i18n="transport.optimalForApples">Optimal for Shimla Apples</div>
+                                    <div class="optimal-value-sidebyside" id="transportOptimalTempValue">0-4°C</div>
+                                    <div class="optimal-range" data-i18n="transport.idealRange">Ideal Storage Range</div>
+                                    <span class="optimal-status-sidebyside status-out-of-range" id="transportOptimalTempStatus" data-i18n="transport.status.outOfRange">Out of Range</span>
+                                </div>
+                            </div>
+                            <div class="optimal-suggestion" id="transportTempSuggestion" data-i18n="transport.tempSuggestion">
+                                Current temperature accelerates ripening. Lower to 2°C for extended shelf life.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ethylene Gas Row -->
+                    <div class="vital-row">
+                        <div class="vital-card-sidebyside">
+                            <div class="vital-header">
+                                <div class="vital-icon-sidebyside" style="color: var(--accent-red);">
+                                    <i class="fas fa-wind"></i>
+                                </div>
+                                <div class="vital-info">
+                                    <div class="vital-title-sidebyside" data-i18n="transport.ethyleneGas">Ethylene Gas</div>
+                                    <div class="vital-value-sidebyside" id="transportEthyleneValue">4.7 PPM</div>
+                                    <span class="vital-status-sidebyside status-high" id="transportEthyleneStatus" data-i18n="transport.status.critical">Critical</span>
+                                </div>
+                            </div>
+                            <div class="vital-chart-sidebyside">
+                                <canvas id="ethyleneChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="optimal-card-sidebyside">
+                            <div class="optimal-header">
+                                <div class="optimal-icon-sidebyside">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <div class="optimal-info">
+                                    <div class="optimal-title-sidebyside" id="transportOptimalEthyleneTitle" data-i18n="transport.optimalForApples">Optimal for Shimla Apples</div>
+                                    <div class="optimal-value-sidebyside" id="transportOptimalEthyleneValue">&lt;1 PPM</div>
+                                    <div class="optimal-range" data-i18n="transport.maxRecommended">Maximum Recommended</div>
+                                    <span class="optimal-status-sidebyside status-out-of-range" id="transportOptimalEthyleneStatus" data-i18n="transport.status.criticalLevel">Critical Level</span>
+                                </div>
+                            </div>
+                            <div class="optimal-suggestion" id="transportEthyleneSuggestion" data-i18n="transport.ethyleneSuggestion">
+                                High ethylene accelerates ripening. Activate scrubbers immediately.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shock Level Row -->
+                    <div class="vital-row">
+                        <div class="vital-card-sidebyside">
+                            <div class="vital-header">
+                                <div class="vital-icon-sidebyside" style="color: var(--accent-green);">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div class="vital-info">
+                                    <div class="vital-title-sidebyside" data-i18n="transport.shockLevel">Shock Level</div>
+                                    <div class="vital-value-sidebyside" id="transportShockValue">0.2 g</div>
+                                    <span class="vital-status-sidebyside status-optimal" id="transportShockStatus" data-i18n="transport.status.stable">Stable</span>
+                                </div>
+                            </div>
+                            <div class="vital-chart-sidebyside">
+                                <canvas id="shockChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="optimal-card-sidebyside">
+                            <div class="optimal-header">
+                                <div class="optimal-icon-sidebyside">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="optimal-info">
+                                    <div class="optimal-title-sidebyside" id="transportOptimalShockTitle" data-i18n="transport.optimalForApples">Optimal for Shimla Apples</div>
+                                    <div class="optimal-value-sidebyside" id="transportOptimalShockValue">&lt;1 g</div>
+                                    <div class="optimal-range" data-i18n="transport.maxTolerance">Maximum Tolerance</div>
+                                    <span class="optimal-status-sidebyside status-within-range" id="transportOptimalShockStatus" data-i18n="transport.status.withinRange">Within Range</span>
+                                </div>
+                            </div>
+                            <div class="optimal-suggestion" id="transportShockSuggestion" data-i18n="transport.shockSuggestion">
+                                Current vibration levels are within acceptable range for apple transport.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Humidity Row -->
+                    <div class="vital-row">
+                        <div class="vital-card-sidebyside">
+                            <div class="vital-header">
+                                <div class="vital-icon-sidebyside" style="color: var(--accent-orange);">
+                                    <i class="fas fa-tint"></i>
+                                </div>
+                                <div class="vital-info">
+                                    <div class="vital-title-sidebyside" data-i18n="transport.humidity">Humidity</div>
+                                    <div class="vital-value-sidebyside" id="transportHumidityValue">68%</div>
+                                    <span class="vital-status-sidebyside status-warning" id="transportHumidityStatus" data-i18n="transport.status.low">Low</span>
+                                </div>
+                            </div>
+                            <div class="vital-chart-sidebyside">
+                                <canvas id="humidityChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="optimal-card-sidebyside">
+                            <div class="optimal-header">
+                                <div class="optimal-icon-sidebyside">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="optimal-info">
+                                    <div class="optimal-title-sidebyside" id="transportOptimalHumidityTitle" data-i18n="transport.optimalForApples">Optimal for Shimla Apples</div>
+                                    <div class="optimal-value-sidebyside" id="transportOptimalHumidityValue">90-95%</div>
+                                    <div class="optimal-range" data-i18n="transport.idealRange">Ideal Range</div>
+                                    <span class="optimal-status-sidebyside status-out-of-range" id="transportOptimalHumidityStatus" data-i18n="transport.status.tooLow">Too Low</span>
+                                </div>
+                            </div>
+                            <div class="optimal-suggestion" id="transportHumiditySuggestion" data-i18n="transport.humiditySuggestion">
+                                Low humidity causes dehydration. Increase to 90% to maintain freshness.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CO2 Percentage Row -->
+                    <div class="vital-row">
+                        <div class="vital-card-sidebyside">
+                            <div class="vital-header">
+                                <div class="vital-icon-sidebyside" style="color: var(--accent-purple);">
+                                    <i class="fas fa-cloud"></i>
+                                </div>
+                                <div class="vital-info">
+                                    <div class="vital-title-sidebyside" data-i18n="transport.co2Percentage">CO₂ Percentage</div>
+                                    <div class="vital-value-sidebyside" id="transportCo2Value">0.04%</div>
+                                    <span class="vital-status-sidebyside status-optimal" id="transportCo2Status" data-i18n="transport.status.optimal">Optimal</span>
+                                </div>
+                            </div>
+                            <div class="vital-chart-sidebyside">
+                                <canvas id="co2Chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="optimal-card-sidebyside">
+                            <div class="optimal-header">
+                                <div class="optimal-icon-sidebyside">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="optimal-info">
+                                    <div class="optimal-title-sidebyside" id="transportOptimalCo2Title" data-i18n="transport.optimalForApples">Optimal for Shimla Apples</div>
+                                    <div class="optimal-value-sidebyside" id="transportOptimalCo2Value">0.03-0.05%</div>
+                                    <div class="optimal-range" data-i18n="transport.ambientAirRange">Ambient Air Range</div>
+                                    <span class="optimal-status-sidebyside status-within-range" id="transportOptimalCo2Status" data-i18n="transport.status.withinRange">Within Range</span>
+                                </div>
+                            </div>
+                            <div class="optimal-suggestion" id="transportCo2Suggestion" data-i18n="transport.co2Suggestion">
+                                CO₂ levels are optimal. Maintain current ventilation for proper air exchange.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOS Alerts Section -->
+            <div class="alerts-section">
+                <div class="alerts-container">
+                    <div class="alerts-header">
+                        <div class="sos-badge">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span data-i18n="transport.sosAlerts">SOS ALERTS</span>
+                        </div>
+                        <div class="alerts-title" data-i18n="transport.criticalConditions">Critical Conditions Requiring Immediate Action</div>
+                    </div>
+                    
+                    <div class="alerts-grid" id="transportAlertsGrid">
+                        <div class="alert-card">
+                            <div class="alert-header">
+                                <div class="alert-icon">
+                                    <i class="fas fa-thermometer-full"></i>
+                                </div>
+                                <div class="alert-title" data-i18n="transport.tempCritical">Temperature Critical</div>
+                            </div>
+                            <div class="alert-message" data-i18n="transport.tempAlertMessage">
+                                Temperature at 13.5°C is accelerating ripening. Optimal range is 0-4°C for Shimla Apples.
+                            </div>
+                            <div class="alert-action">
+                                <i class="fas fa-bolt"></i>
+                                <span data-i18n="transport.immediateActionTemp">IMMEDIATE ACTION: Activate refrigeration unit</span>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-card">
+                            <div class="alert-header">
+                                <div class="alert-icon">
+                                    <i class="fas fa-wind"></i>
+                                </div>
+                                <div class="alert-title" data-i18n="transport.ethyleneCritical">Ethylene Critical</div>
+                            </div>
+                            <div class="alert-message" data-i18n="transport.ethyleneAlertMessage">
+                                Ethylene levels at 4.7 PPM are dangerously high, accelerating spoilage and ripening.
+                            </div>
+                            <div class="alert-action">
+                                <i class="fas fa-bolt"></i>
+                                <span data-i18n="transport.immediateActionEthylene">IMMEDIATE ACTION: Engage atmospheric scrubbers</span>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-card">
+                            <div class="alert-header">
+                                <div class="alert-icon">
+                                    <i class="fas fa-tint"></i>
+                                </div>
+                                <div class="alert-title" data-i18n="transport.humidityCritical">Humidity Critical</div>
+                            </div>
+                            <div class="alert-message" data-i18n="transport.humidityAlertMessage">
+                                Humidity at 68% is causing dehydration. Optimal range is 90-95% for Shimla Apples.
+                            </div>
+                            <div class="alert-action">
+                                <i class="fas fa-bolt"></i>
+                                <span data-i18n="transport.immediateActionHumidity">IMMEDIATE ACTION: Increase humidity to 90%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Solutions Section -->
+            <div class="solutions-section">
+                <div class="solutions-container">
+                    <div class="solutions-header">
+                        <div class="solutions-badge">
+                            <i class="fas fa-robot"></i>
+                            <span data-i18n="transport.aiSolutions">AI SOLUTIONS</span>
+                        </div>
+                        <div class="solutions-title" data-i18n="transport.simpleSteps">Simple Steps to Fix Critical Alerts</div>
+                    </div>
+                    
+                    <div class="solutions-grid">
+                        <div class="solution-card">
+                            <div class="solution-header">
+                                <div class="solution-icon">
+                                    <i class="fas fa-snowflake"></i>
+                                </div>
+                                <div class="solution-title" data-i18n="transport.fixTemperature">Fix Temperature</div>
+                            </div>
+                            <div class="solution-steps">
+                                <div class="solution-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-text" data-i18n="transport.tempStep1">Locate the refrigeration control panel in your vehicle</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-text" data-i18n="transport.tempStep2">Set temperature to 2°C (not lower to avoid freezing)</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-text" data-i18n="transport.tempStep3">Wait 15 minutes and check if temperature is dropping</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-text" data-i18n="transport.tempStep4">If not working, check if the unit has power and restart it</div>
+                                </div>
+                            </div>
+                            <div class="solution-result">
+                                <div class="result-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="result-text" data-i18n="transport.tempResult">Expected Result: Temperature drops to 2-4°C within 30 minutes</div>
+                            </div>
+                        </div>
+                        
+                        <div class="solution-card">
+                            <div class="solution-header">
+                                <div class="solution-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <div class="solution-title" data-i18n="transport.fixEthylene">Fix Ethylene Gas</div>
+                            </div>
+                            <div class="solution-steps">
+                                <div class="solution-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-text" data-i18n="transport.ethyleneStep1">Find the ethylene scrubber switch (usually near air vents)</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-text" data-i18n="transport.ethyleneStep2">Turn on the atmospheric scrubber system</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-text" data-i18n="transport.ethyleneStep3">Set scrubber to maximum filtration mode</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-text" data-i18n="transport.ethyleneStep4">Ensure all air vents are open for proper circulation</div>
+                                </div>
+                            </div>
+                            <div class="solution-result">
+                                <div class="result-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="result-text" data-i18n="transport.ethyleneResult">Expected Result: Ethylene levels drop below 1 PPM within 1 hour</div>
+                            </div>
+                        </div>
+                        
+                        <div class="solution-card">
+                            <div class="solution-header">
+                                <div class="solution-icon">
+                                    <i class="fas fa-tint"></i>
+                                </div>
+                                <div class="solution-title" data-i18n="transport.fixHumidity">Fix Humidity</div>
+                            </div>
+                            <div class="solution-steps">
+                                <div class="solution-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-text" data-i18n="transport.humidityStep1">Locate humidity control panel in your refrigeration unit</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-text" data-i18n="transport.humidityStep2">Increase humidity setting to 90%</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-text" data-i18n="transport.humidityStep3">Check if water reservoir has sufficient water</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-text" data-i18n="transport.humidityStep4">If manual system, activate misting or add water trays</div>
+                                </div>
+                            </div>
+                            <div class="solution-result">
+                                <div class="result-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="result-text" data-i18n="transport.humidityResult">Expected Result: Humidity rises to 85-90% within 45 minutes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Risk Analysis Section -->
+            <div class="risk-analysis-section">
+                <div class="risk-analysis-container">
+                    <div class="risk-analysis-header">
+                        <div class="risk-badge">
+                            <i class="fas fa-robot"></i>
+                            <span data-i18n="transport.riskAnalysis">AI Risk Analysis: 35% Spoilage Probability</span>
+                        </div>
+                        <div class="risk-analysis-title" data-i18n="transport.impactAssessment">Impact Assessment & Business Value</div>
+                    </div>
+                    
+                    <div class="risk-analysis-content">
+                        <div class="impact-grid">
+                            <div class="impact-card impact-before">
+                                <div class="impact-value" id="transportCurrentRisk">7 tons</div>
+                                <div class="impact-label" data-i18n="transport.currentSpoilageRisk">Current Spoilage Risk (35%)</div>
+                            </div>
+                            <div class="impact-card impact-after">
+                                <div class="impact-value" id="transportProjectedRisk">1.6 tons</div>
+                                <div class="impact-label" data-i18n="transport.projectedSpoilage">Projected Spoilage (8%)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="business-impact">
+                            <div class="business-impact-header">
+                                <div class="business-impact-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="business-impact-title" data-i18n="transport.businessImpact">Business Impact Analysis</div>
+                            </div>
+                            <div class="business-impact-content">
+                                <p><strong data-i18n="transport.shipmentDetails">Shipment Details:</strong> <span id="transportShipmentDetails">20-ton Shimla Apple Truck</span></p>
+                                <p id="transportRiskDetails" data-i18n="transport.spoilageReduction">By implementing the AI Solutions, we project a 77% reduction in spoilage risk.</p>
+                                <p><strong id="transportProduceSaved">5.4 tons of produce saved</strong> - <span id="transportValuePreservation" data-i18n="transport.valuePreservation">equivalent to ₹5,40,000 in value preservation</span></p>
+                                <div class="savings-highlight">
+                                    <i class="fas fa-check-circle" style="color: var(--accent-green);"></i>
+                                    <strong data-i18n="transport.payloadIncrease">27% increase in effective payload capacity</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipment Info Section -->
+            <div class="shipment-info-section">
+                <div class="shipment-header">
+                    <div class="shipment-id" data-i18n="transport.shipmentId">Shipment #NSK-HYD-007 | <span id="transportShipmentCropName">Shimla Apples</span></div>
+                    <div class="shipment-route">
+                        <span class="pulse"></span>
+                        <span data-i18n="transport.shipmentRoute">Nashik → Hyderabad • 4h 30m remaining</span>
+                    </div>
+                </div>
+
+                <div class="shipment-details-grid">
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="transport.currentStatus">Current Status</div>
+                        <div class="detail-value" data-i18n="transport.inTransit">In Transit</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="transport.progress">Progress</div>
+                        <div class="detail-value" data-i18n="transport.checkpoint">Checkpoint 1/4</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="transport.nextStop">Next Stop</div>
+                        <div class="detail-value" data-i18n="transport.warehouseA">Warehouse A (45 min)</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="transport.vehicle">Vehicle</div>
+                        <div class="detail-value">Truck MH-12-AB-1234</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="transport.driver">Driver</div>
+                        <div class="detail-value">Rajesh Kumar</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="transport.totalDistance">Total Distance</div>
+                        <div class="detail-value">560 km</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="transport.currentSpeed">Current Speed</div>
+                        <div class="detail-value">65 km/h</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="transport.cropType">Crop Type</div>
+                        <div class="detail-value" id="transportDetailCropType" data-i18n="transport.shimlaApples">Shimla Apples</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Width Map Section -->
+            <div class="full-width-section">
+                <div class="map-section">
+                    <div class="section-header">
+                        <div class="section-title-map" data-i18n="transport.liveFleetTracking">Live Fleet Tracking</div>
+                        <div class="section-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-filter"></i>
+                                <span data-i18n="transport.filter">Filter</span>
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                <span data-i18n="transport.newShipment">New Shipment</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="map"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warehouse View -->
+        <div id="warehouse-view" class="view-content">
+            <!-- Updated Hero Section with Crop Selector -->
+            <section class="hero-section-with-crop">
+                <div class="hero-content">
+                    <h1 class="hero-title" data-i18n="warehouse.heroTitle">Intelligent Cold Storage Monitoring</h1>
+                    <p class="hero-subtitle" data-i18n="warehouse.heroSubtitle">AI-driven storage platform reducing food waste through real-time monitoring and predictive analytics</p>
+                </div>
+                <div class="crop-selector-wrapper">
+                    <div class="crop-selector-container">
+                        <div class="crop-selector">
+                            <button class="crop-selector-btn" id="warehouseCropSelectorBtn">
+                                <div style="display: flex; align-items: center;">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-apple-alt"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name" id="warehouseCurrentCropName">Shimla Apples</div>
+                                        <div class="crop-details" id="warehouseCurrentCropDetails">Optimal conditions active</div>
+                                    </div>
+                                </div>
+                                <i class="fas fa-chevron-down" id="warehouseCropChevron"></i>
+                            </button>
+                            <div class="crop-dropdown" id="warehouseCropDropdown">
+                                <div class="crop-option active" data-crop="apples">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-apple-alt"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name">Shimla Apples</div>
+                                        <div class="crop-details">0-4°C • 90-95% Humidity</div>
+                                    </div>
+                                </div>
+                                <div class="crop-option" data-crop="bananas">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-banana"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name">Cavendish Bananas</div>
+                                        <div class="crop-details">13-15°C • 85-95% Humidity</div>
+                                    </div>
+                                </div>
+                                <div class="crop-option" data-crop="tomatoes">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-seedling"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name">Cherry Tomatoes</div>
+                                        <div class="crop-details">10-13°C • 90-95% Humidity</div>
+                                    </div>
+                                </div>
+                                <div class="crop-option" data-crop="potatoes">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-potato"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name">Fresh Potatoes</div>
+                                        <div class="crop-details">4-8°C • 85-90% Humidity</div>
+                                    </div>
+                                </div>
+                                <div class="crop-option" data-crop="grapes">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-grapes"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name">Thompson Grapes</div>
+                                        <div class="crop-details">-1 to 0°C • 90-95% Humidity</div>
+                                    </div>
+                                </div>
+                                <div class="crop-option" data-crop="berries">
+                                    <div class="crop-icon">
+                                        <i class="fas fa-berry"></i>
+                                    </div>
+                                    <div class="crop-info">
+                                        <div class="crop-name">Fresh Berries</div>
+                                        <div class="crop-details">0-2°C • 90-95% Humidity</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Freshness Timeline Section -->
+            <div class="freshness-timeline-section">
+                <div class="freshness-timeline-container">
+                    <div class="freshness-header">
+                        <div class="freshness-badge">
+                            <i class="fas fa-clock"></i>
+                            <span>FRESHNESS TIMELINE</span>
+                        </div>
+                        <div class="freshness-title">Product Quality Degradation Forecast</div>
+                    </div>
+                    
+                    <div class="timeline-container">
+                        <div class="timeline-bar">
+                            <div class="timeline-segment timeline-excellent" id="warehouseExcellentSegment"></div>
+                            <div class="timeline-segment timeline-medium" id="warehouseMediumSegment"></div>
+                            <div class="timeline-segment timeline-low" id="warehouseLowSegment"></div>
+                            <div class="current-time-marker" id="warehouseCurrentMarker"></div>
+                        </div>
+                        <div class="timeline-labels">
+                            <div class="timeline-label">
+                                <div class="label-title">Excellent</div>
+                                <div class="label-time" id="warehouseExcellentTime">0-15 days</div>
+                            </div>
+                            <div class="timeline-label">
+                                <div class="label-title">Medium</div>
+                                <div class="label-time" id="warehouseMediumTime">15-45 days</div>
+                            </div>
+                            <div class="timeline-label">
+                                <div class="label-title">Low</div>
+                                <div class="label-time" id="warehouseLowTime">45-60 days</div>
+                            </div>
+                        </div>
+                        <div class="timeline-status">
+                            <div class="current-status" id="warehouseCurrentStatus">
+                                <div class="status-dot status-excellent"></div>
+                                <span id="warehouseStatusText">Current: Excellent Quality (5 days elapsed)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vitals Section -->
+            <div class="vitals-section">
+                <div class="section-title" data-i18n="warehouse.storageVitals">Storage Vitals Monitoring</div>
+                
+                <div class="vitals-grid-sidebyside">
+                    <!-- Temperature Row -->
+                    <div class="vital-row">
+                        <div class="vital-card-sidebyside">
+                            <div class="vital-header">
+                                <div class="vital-icon-sidebyside" style="color: var(--accent-blue);">
+                                    <i class="fas fa-thermometer-half"></i>
+                                </div>
+                                <div class="vital-info">
+                                    <div class="vital-title-sidebyside" data-i18n="warehouse.temperature">Temperature</div>
+                                    <div class="vital-value-sidebyside" id="warehouseTempValue">3.2°C</div>
+                                    <span class="vital-status-sidebyside status-optimal" id="warehouseTempStatus" data-i18n="warehouse.status.optimal">Optimal</span>
+                                </div>
+                            </div>
+                            <div class="vital-chart-sidebyside">
+                                <canvas id="tempChartWarehouse"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="optimal-card-sidebyside">
+                            <div class="optimal-header">
+                                <div class="optimal-icon-sidebyside">
+                                    <i class="fas fa-snowflake"></i>
+                                </div>
+                                <div class="optimal-info">
+                                    <div class="optimal-title-sidebyside" id="warehouseOptimalTempTitle" data-i18n="warehouse.optimalForApples">Optimal for Shimla Apples</div>
+                                    <div class="optimal-value-sidebyside" id="warehouseOptimalTempValue">0-4°C</div>
+                                    <div class="optimal-range" data-i18n="warehouse.idealRange">Ideal Storage Range</div>
+                                    <span class="optimal-status-sidebyside status-within-range" id="warehouseOptimalTempStatus" data-i18n="warehouse.status.withinRange">Within Range</span>
+                                </div>
+                            </div>
+                            <div class="optimal-suggestion" id="warehouseTempSuggestion" data-i18n="warehouse.tempSuggestion">
+                                Temperature is optimal. Continue maintaining current settings for maximum shelf life.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ethylene Gas Row -->
+                    <div class="vital-row">
+                        <div class="vital-card-sidebyside">
+                            <div class="vital-header">
+                                <div class="vital-icon-sidebyside" style="color: var(--accent-red);">
+                                    <i class="fas fa-wind"></i>
+                                </div>
+                                <div class="vital-info">
+                                    <div class="vital-title-sidebyside" data-i18n="warehouse.ethyleneGas">Ethylene Gas</div>
+                                    <div class="vital-value-sidebyside" id="warehouseEthyleneValue">0.8 PPM</div>
+                                    <span class="vital-status-sidebyside status-optimal" id="warehouseEthyleneStatus" data-i18n="warehouse.status.acceptable">Acceptable</span>
+                                </div>
+                            </div>
+                            <div class="vital-chart-sidebyside">
+                                <canvas id="ethyleneChartWarehouse"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="optimal-card-sidebyside">
+                            <div class="optimal-header">
+                                <div class="optimal-icon-sidebyside">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <div class="optimal-info">
+                                    <div class="optimal-title-sidebyside" id="warehouseOptimalEthyleneTitle" data-i18n="warehouse.optimalForApples">Optimal for Shimla Apples</div>
+                                    <div class="optimal-value-sidebyside" id="warehouseOptimalEthyleneValue">&lt;1 PPM</div>
+                                    <div class="optimal-range" data-i18n="warehouse.maxRecommended">Maximum Recommended</div>
+                                    <span class="optimal-status-sidebyside status-within-range" id="warehouseOptimalEthyleneStatus" data-i18n="warehouse.status.withinRange">Within Range</span>
+                                </div>
+                            </div>
+                            <div class="optimal-suggestion" id="warehouseEthyleneSuggestion" data-i18n="warehouse.ethyleneSuggestion">
+                                Ethylene levels are acceptable. Continue regular monitoring and filtration.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Humidity Row -->
+                    <div class="vital-row">
+                        <div class="vital-card-sidebyside">
+                            <div class="vital-header">
+                                <div class="vital-icon-sidebyside" style="color: var(--accent-orange);">
+                                    <i class="fas fa-tint"></i>
+                                </div>
+                                <div class="vital-info">
+                                    <div class="vital-title-sidebyside" data-i18n="warehouse.humidity">Humidity</div>
+                                    <div class="vital-value-sidebyside" id="warehouseHumidityValue">92%</div>
+                                    <span class="vital-status-sidebyside status-optimal" id="warehouseHumidityStatus" data-i18n="warehouse.status.optimal">Optimal</span>
+                                </div>
+                            </div>
+                            <div class="vital-chart-sidebyside">
+                                <canvas id="humidityChartWarehouse"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="optimal-card-sidebyside">
+                            <div class="optimal-header">
+                                <div class="optimal-icon-sidebyside">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="optimal-info">
+                                    <div class="optimal-title-sidebyside" id="warehouseOptimalHumidityTitle" data-i18n="warehouse.optimalForApples">Optimal for Shimla Apples</div>
+                                    <div class="optimal-value-sidebyside" id="warehouseOptimalHumidityValue">90-95%</div>
+                                    <div class="optimal-range" data-i18n="warehouse.idealRange">Ideal Range</div>
+                                    <span class="optimal-status-sidebyside status-within-range" id="warehouseOptimalHumidityStatus" data-i18n="warehouse.status.withinRange">Within Range</span>
+                                </div>
+                            </div>
+                            <div class="optimal-suggestion" id="warehouseHumiditySuggestion" data-i18n="warehouse.humiditySuggestion">
+                                Humidity is optimal. Continue maintaining current settings to prevent dehydration.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CO2 Percentage Row -->
+                    <div class="vital-row">
+                        <div class="vital-card-sidebyside">
+                            <div class="vital-header">
+                                <div class="vital-icon-sidebyside" style="color: var(--accent-purple);">
+                                    <i class="fas fa-cloud"></i>
+                                </div>
+                                <div class="vital-info">
+                                    <div class="vital-title-sidebyside" data-i18n="warehouse.co2Percentage">CO₂ Percentage</div>
+                                    <div class="vital-value-sidebyside" id="warehouseCo2Value">0.04%</div>
+                                    <span class="vital-status-sidebyside status-optimal" id="warehouseCo2Status" data-i18n="warehouse.status.optimal">Optimal</span>
+                                </div>
+                            </div>
+                            <div class="vital-chart-sidebyside">
+                                <canvas id="co2ChartWarehouse"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="optimal-card-sidebyside">
+                            <div class="optimal-header">
+                                <div class="optimal-icon-sidebyside">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="optimal-info">
+                                    <div class="optimal-title-sidebyside" id="warehouseOptimalCo2Title" data-i18n="warehouse.optimalForApples">Optimal for Shimla Apples</div>
+                                    <div class="optimal-value-sidebyside" id="warehouseOptimalCo2Value">0.03-0.05%</div>
+                                    <div class="optimal-range" data-i18n="warehouse.ambientAirRange">Ambient Air Range</div>
+                                    <span class="optimal-status-sidebyside status-within-range" id="warehouseOptimalCo2Status" data-i18n="warehouse.status.withinRange">Within Range</span>
+                                </div>
+                            </div>
+                            <div class="optimal-suggestion" id="warehouseCo2Suggestion" data-i18n="warehouse.co2Suggestion">
+                                CO₂ levels are optimal. Maintain current ventilation for proper air exchange.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Air Quality Row -->
+                    <div class="vital-row">
+                        <div class="vital-card-sidebyside">
+                            <div class="vital-header">
+                                <div class="vital-icon-sidebyside" style="color: var(--accent-green);">
+                                    <i class="fas fa-wind"></i>
+                                </div>
+                                <div class="vital-info">
+                                    <div class="vital-title-sidebyside" data-i18n="warehouse.airQuality">Air Quality Index</div>
+                                    <div class="vital-value-sidebyside" id="warehouseAirQualityValue">86</div>
+                                    <span class="vital-status-sidebyside status-optimal" id="warehouseAirQualityStatus" data-i18n="warehouse.status.good">Good</span>
+                                </div>
+                            </div>
+                            <div class="vital-chart-sidebyside">
+                                <canvas id="airQualityChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="optimal-card-sidebyside">
+                            <div class="optimal-header">
+                                <div class="optimal-icon-sidebyside">
+                                    <i class="fas fa-fan"></i>
+                                </div>
+                                <div class="optimal-info">
+                                    <div class="optimal-title-sidebyside" id="warehouseOptimalAirQualityTitle" data-i18n="warehouse.optimalForApples">Optimal for Shimla Apples</div>
+                                    <div class="optimal-value-sidebyside" id="warehouseOptimalAirQualityValue">>80</div>
+                                    <div class="optimal-range" data-i18n="warehouse.goodAirQuality">Good Air Quality</div>
+                                    <span class="optimal-status-sidebyside status-within-range" id="warehouseOptimalAirQualityStatus" data-i18n="warehouse.status.withinRange">Within Range</span>
+                                </div>
+                            </div>
+                            <div class="optimal-suggestion" id="warehouseAirQualitySuggestion" data-i18n="warehouse.airQualitySuggestion">
+                                Air quality is good. Continue regular ventilation cycles for optimal storage conditions.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Storage Alerts Section -->
+            <div class="alerts-section">
+                <div class="alerts-container">
+                    <div class="alerts-header">
+                        <div class="sos-badge">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span data-i18n="warehouse.storageAlerts">STORAGE ALERTS</span>
+                        </div>
+                        <div class="alerts-title" data-i18n="warehouse.storageConditions">Storage Conditions Requiring Attention</div>
+                    </div>
+                    
+                    <div class="alerts-grid" id="warehouseAlertsGrid">
+                        <div class="alert-card">
+                            <div class="alert-header">
+                                <div class="alert-icon">
+                                    <i class="fas fa-temperature-low"></i>
+                                </div>
+                                <div class="alert-title" data-i18n="warehouse.tempFluctuation">Temperature Fluctuation</div>
+                            </div>
+                            <div class="alert-message" data-i18n="warehouse.tempFluctuationMessage">
+                                Temperature variance of ±1.2°C detected in last 4 hours. May affect apple quality consistency.
+                            </div>
+                            <div class="alert-action">
+                                <i class="fas fa-bolt"></i>
+                                <span data-i18n="warehouse.actionCalibrate">ACTION: Calibrate cooling system</span>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-card">
+                            <div class="alert-header">
+                                <div class="alert-icon">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                <div class="alert-title" data-i18n="warehouse.energyConsumption">Energy Consumption</div>
+                            </div>
+                            <div class="alert-message" data-i18n="warehouse.energyConsumptionMessage">
+                                Energy usage increased by 18% compared to last week. Check for system inefficiencies.
+                            </div>
+                            <div class="alert-action">
+                                <i class="fas fa-bolt"></i>
+                                <span data-i18n="warehouse.actionMaintenance">ACTION: Schedule maintenance check</span>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-card">
+                            <div class="alert-header">
+                                <div class="alert-icon">
+                                    <i class="fas fa-door-closed"></i>
+                                </div>
+                                <div class="alert-title" data-i18n="warehouse.doorActivity">Door Activity</div>
+                            </div>
+                            <div class="alert-message" data-i18n="warehouse.doorActivityMessage">
+                                High door activity detected (12 openings in 2 hours). This affects temperature stability.
+                            </div>
+                            <div class="alert-action">
+                                <i class="fas fa-bolt"></i>
+                                <span data-i18n="warehouse.actionAccess">ACTION: Review access protocols</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Solutions Section -->
+            <div class="solutions-section">
+                <div class="solutions-container">
+                    <div class="solutions-header">
+                        <div class="solutions-badge">
+                            <i class="fas fa-robot"></i>
+                            <span data-i18n="warehouse.storageOptimization">STORAGE OPTIMIZATION</span>
+                        </div>
+                        <div class="solutions-title" data-i18n="warehouse.aiRecommendations">AI Recommendations for Storage Efficiency</div>
+                    </div>
+                    
+                    <div class="solutions-grid">
+                        <div class="solution-card">
+                            <div class="solution-header">
+                                <div class="solution-icon">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <div class="solution-title" data-i18n="warehouse.tempOptimization">Temperature Optimization</div>
+                            </div>
+                            <div class="solution-steps">
+                                <div class="solution-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-text" data-i18n="warehouse.tempStep1">Check cooling system calibration in control room</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-text" data-i18n="warehouse.tempStep2">Verify temperature sensors are functioning correctly</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-text" data-i18n="warehouse.tempStep3">Adjust cooling cycles to reduce temperature variance</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-text" data-i18n="warehouse.tempStep4">Implement zone-based temperature control if available</div>
+                                </div>
+                            </div>
+                            <div class="solution-result">
+                                <div class="result-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="result-text" data-i18n="warehouse.tempResult">Expected Result: Temperature stability within ±0.5°C</div>
+                            </div>
+                        </div>
+                        
+                        <div class="solution-card">
+                            <div class="solution-header">
+                                <div class="solution-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div class="solution-title" data-i18n="warehouse.energyEfficiency">Energy Efficiency</div>
+                            </div>
+                            <div class="solution-steps">
+                                <div class="solution-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-text" data-i18n="warehouse.energyStep1">Check compressor performance and refrigerant levels</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-text" data-i18n="warehouse.energyStep2">Inspect insulation integrity in storage areas</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-text" data-i18n="warehouse.energyStep3">Optimize defrost cycles based on humidity levels</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-text" data-i18n="warehouse.energyStep4">Schedule energy-intensive operations during off-peak hours</div>
+                                </div>
+                            </div>
+                            <div class="solution-result">
+                                <div class="result-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="result-text" data-i18n="warehouse.energyResult">Expected Result: 12-15% reduction in energy consumption</div>
+                            </div>
+                        </div>
+                        
+                        <div class="solution-card">
+                            <div class="solution-header">
+                                <div class="solution-icon">
+                                    <i class="fas fa-door-closed"></i>
+                                </div>
+                                <div class="solution-title" data-i18n="warehouse.accessManagement">Access Management</div>
+                            </div>
+                            <div class="solution-steps">
+                                <div class="solution-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-text" data-i18n="warehouse.accessStep1">Review and update access protocols for staff</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-text" data-i18n="warehouse.accessStep2">Install air curtains on frequently used doors</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-text" data-i18n="warehouse.accessStep3">Implement batch retrieval system to reduce openings</div>
+                                </div>
+                                <div class="solution-step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-text" data-i18n="warehouse.accessStep4">Schedule inventory checks during low-activity periods</div>
+                                </div>
+                            </div>
+                            <div class="solution-result">
+                                <div class="result-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="result-text" data-i18n="warehouse.accessResult">Expected Result: 40% reduction in temperature fluctuations</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Risk Analysis Section -->
+            <div class="risk-analysis-section">
+                <div class="risk-analysis-container">
+                    <div class="risk-analysis-header">
+                        <div class="risk-badge">
+                            <i class="fas fa-robot"></i>
+                            <span data-i18n="warehouse.storageRiskAnalysis">STORAGE RISK ANALYSIS: 12% Spoilage Probability</span>
+                        </div>
+                        <div class="risk-analysis-title" data-i18n="warehouse.storageImpact">Storage Impact Assessment & Business Value</div>
+                    </div>
+                    
+                    <div class="risk-analysis-content">
+                        <div class="impact-grid">
+                            <div class="impact-card impact-before">
+                                <div class="impact-value" id="warehouseCurrentRisk">2.4 tons</div>
+                                <div class="impact-label" data-i18n="warehouse.currentSpoilageRisk">Current Spoilage Risk (12%)</div>
+                            </div>
+                            <div class="impact-card impact-after">
+                                <div class="impact-value" id="warehouseProjectedRisk">0.8 tons</div>
+                                <div class="impact-label" data-i18n="warehouse.projectedSpoilage">Projected Spoilage (4%)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="business-impact">
+                            <div class="business-impact-header">
+                                <div class="business-impact-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="business-impact-title" data-i18n="warehouse.storageBusinessImpact">Storage Business Impact Analysis</div>
+                            </div>
+                            <div class="business-impact-content">
+                                <p><strong data-i18n="warehouse.storageDetails">Storage Details:</strong> <span id="warehouseStorageDetails">20-ton Shimla Apple Cold Storage Unit</span></p>
+                                <p id="warehouseRiskDetails" data-i18n="warehouse.spoilageReduction">By implementing the Storage Optimization recommendations, we project a 67% reduction in spoilage risk.</p>
+                                <p><strong id="warehouseProduceSaved">1.6 tons of produce saved</strong> - <span id="warehouseValuePreservation" data-i18n="warehouse.valuePreservation">equivalent to ₹1,60,000 in value preservation</span></p>
+                                <div class="savings-highlight">
+                                    <i class="fas fa-check-circle" style="color: var(--accent-green);"></i>
+                                    <strong data-i18n="warehouse.storageLife">Additional 30 days of optimal storage life achieved</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Storage Info Section -->
+            <div class="storage-info-section">
+                <div class="storage-header">
+                    <div class="storage-id" data-i18n="warehouse.storageId">Storage #CS-HYD-005 | <span id="warehouseStorageCropName">Shimla Apples</span></div>
+                    <div class="storage-status">
+                        <span class="pulse"></span>
+                        <span data-i18n="warehouse.inStorage">In Storage • 45 days remaining</span>
+                    </div>
+                </div>
+
+                <div class="storage-details-grid">
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="warehouse.currentStatus">Current Status</div>
+                        <div class="detail-value" data-i18n="warehouse.optimalConditions">Optimal Conditions</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="warehouse.storageDuration">Storage Duration</div>
+                        <div class="detail-value">15 days / 60 days</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="warehouse.nextInspection">Next Inspection</div>
+                        <div class="detail-value" data-i18n="warehouse.in3Days">In 3 days</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="warehouse.warehouse">Warehouse</div>
+                        <div class="detail-value" data-i18n="warehouse.hyderabadCold">Hyderabad Cold Storage</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="warehouse.manager">Manager</div>
+                        <div class="detail-value">Anjali Sharma</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="warehouse.totalCapacity">Total Capacity</div>
+                        <div class="detail-value">50 tons</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="warehouse.currentStock">Current Stock</div>
+                        <div class="detail-value">20 tons</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label" data-i18n="warehouse.cropType">Crop Type</div>
+                        <div class="detail-value" id="warehouseDetailCropType" data-i18n="warehouse.shimlaApples">Shimla Apples</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 data-i18n="footer.intellichain">IntelliChain</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link" data-i18n="footer.aboutUs">About Us</a>
+                    <a href="#" class="footer-link" data-i18n="footer.careers">Careers</a>
+                    <a href="#" class="footer-link" data-i18n="footer.investors">Investors</a>
+                    <a href="#" class="footer-link" data-i18n="footer.ethics">Ethics</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3 data-i18n="footer.platform">Platform</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link" data-i18n="footer.fleetManagement">Fleet Management</a>
+                    <a href="#" class="footer-link" data-i18n="footer.coldStorage">Cold Storage</a>
+                    <a href="#" class="footer-link" data-i18n="footer.consumerTraceability">Consumer Traceability</a>
+                    <a href="#" class="footer-link" data-i18n="footer.apiDocumentation">API Documentation</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3 data-i18n="footer.resources">Resources</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link" data-i18n="footer.documentation">Documentation</a>
+                    <a href="#" class="footer-link" data-i18n="footer.helpCenter">Help Center</a>
+                    <a href="#" class="footer-link" data-i18n="footer.community">Community</a>
+                    <a href="#" class="footer-link" data-i18n="footer.partners">Partners</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3 data-i18n="footer.contact">Contact</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link" data-i18n="footer.support">Support</a>
+                    <a href="#" class="footer-link" data-i18n="footer.sales">Sales</a>
+                    <a href="#" class="footer-link" data-i18n="footer.media">Media</a>
+                    <a href="#" class="footer-link" data-i18n="footer.security">Security</a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <span data-i18n="footer.copyright">&copy; 2023 IntelliChain Technologies. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                // Navigation
+                "nav.transport": "Transport",
+                "nav.warehouse": "Warehouse",
+                "nav.signIn": "Sign In",
+                "nav.getStarted": "Get Started",
+                
+                // Transport View
+                "transport.heroTitle": "Intelligent Supply Chain",
+                "transport.heroSubtitle": "AI-driven logistics platform reducing food waste through real-time monitoring and predictive analytics",
+                "transport.vitalsTitle": "Live Vitals Monitoring",
+                "transport.temperature": "Temperature",
+                "transport.status.high": "High",
+                "transport.status.critical": "Critical",
+                "transport.status.stable": "Stable",
+                "transport.status.low": "Low",
+                "transport.status.optimal": "Optimal",
+                "transport.status.outOfRange": "Out of Range",
+                "transport.status.criticalLevel": "Critical Level",
+                "transport.status.withinRange": "Within Range",
+                "transport.status.tooLow": "Too Low",
+                "transport.optimalForApples": "Optimal for Shimla Apples",
+                "transport.idealRange": "Ideal Storage Range",
+                "transport.maxRecommended": "Maximum Recommended",
+                "transport.maxTolerance": "Maximum Tolerance",
+                "transport.ambientAirRange": "Ambient Air Range",
+                "transport.tempSuggestion": "Current temperature accelerates ripening. Lower to 2°C for extended shelf life.",
+                "transport.ethyleneSuggestion": "High ethylene accelerates ripening. Activate scrubbers immediately.",
+                "transport.shockSuggestion": "Current vibration levels are within acceptable range for apple transport.",
+                "transport.humiditySuggestion": "Low humidity causes dehydration. Increase to 90% to maintain freshness.",
+                "transport.co2Suggestion": "CO₂ levels are optimal. Maintain current ventilation for proper air exchange.",
+                "transport.ethyleneGas": "Ethylene Gas",
+                "transport.shockLevel": "Shock Level",
+                "transport.humidity": "Humidity",
+                "transport.co2Percentage": "CO₂ Percentage",
+                "transport.sosAlerts": "SOS ALERTS",
+                "transport.criticalConditions": "Critical Conditions Requiring Immediate Action",
+                "transport.tempCritical": "Temperature Critical",
+                "transport.tempAlertMessage": "Temperature at 13.5°C is accelerating ripening. Optimal range is 0-4°C for Shimla Apples.",
+                "transport.immediateActionTemp": "IMMEDIATE ACTION: Activate refrigeration unit",
+                "transport.ethyleneCritical": "Ethylene Critical",
+                "transport.ethyleneAlertMessage": "Ethylene levels at 4.7 PPM are dangerously high, accelerating spoilage and ripening.",
+                "transport.immediateActionEthylene": "IMMEDIATE ACTION: Engage atmospheric scrubbers",
+                "transport.humidityCritical": "Humidity Critical",
+                "transport.humidityAlertMessage": "Humidity at 68% is causing dehydration. Optimal range is 90-95% for Shimla Apples.",
+                "transport.immediateActionHumidity": "IMMEDIATE ACTION: Increase humidity to 90%",
+                "transport.aiSolutions": "AI SOLUTIONS",
+                "transport.simpleSteps": "Simple Steps to Fix Critical Alerts",
+                "transport.fixTemperature": "Fix Temperature",
+                "transport.tempStep1": "Locate the refrigeration control panel in your vehicle",
+                "transport.tempStep2": "Set temperature to 2°C (not lower to avoid freezing)",
+                "transport.tempStep3": "Wait 15 minutes and check if temperature is dropping",
+                "transport.tempStep4": "If not working, check if the unit has power and restart it",
+                "transport.tempResult": "Expected Result: Temperature drops to 2-4°C within 30 minutes",
+                "transport.fixEthylene": "Fix Ethylene Gas",
+                "transport.ethyleneStep1": "Find the ethylene scrubber switch (usually near air vents)",
+                "transport.ethyleneStep2": "Turn on the atmospheric scrubber system",
+                "transport.ethyleneStep3": "Set scrubber to maximum filtration mode",
+                "transport.ethyleneStep4": "Ensure all air vents are open for proper circulation",
+                "transport.ethyleneResult": "Expected Result: Ethylene levels drop below 1 PPM within 1 hour",
+                "transport.fixHumidity": "Fix Humidity",
+                "transport.humidityStep1": "Locate humidity control panel in your refrigeration unit",
+                "transport.humidityStep2": "Increase humidity setting to 90%",
+                "transport.humidityStep3": "Check if water reservoir has sufficient water",
+                "transport.humidityStep4": "If manual system, activate misting or add water trays",
+                "transport.humidityResult": "Expected Result: Humidity rises to 85-90% within 45 minutes",
+                "transport.riskAnalysis": "AI Risk Analysis: 35% Spoilage Probability",
+                "transport.impactAssessment": "Impact Assessment & Business Value",
+                "transport.currentSpoilageRisk": "Current Spoilage Risk (35%)",
+                "transport.projectedSpoilage": "Projected Spoilage (8%)",
+                "transport.businessImpact": "Business Impact Analysis",
+                "transport.shipmentDetails": "Shipment Details:",
+                "transport.spoilageReduction": "By implementing the AI Solutions, we project a 77% reduction in spoilage risk.",
+                "transport.produceSaved": "5.4 tons of produce saved",
+                "transport.valuePreservation": "equivalent to ₹5,40,000 in value preservation",
+                "transport.payloadIncrease": "27% increase in effective payload capacity",
+                "transport.shipmentId": "Shipment #NSK-HYD-007 | Shimla Apples",
+                "transport.shipmentRoute": "Nashik → Hyderabad • 4h 30m remaining",
+                "transport.currentStatus": "Current Status",
+                "transport.inTransit": "In Transit",
+                "transport.progress": "Progress",
+                "transport.checkpoint": "Checkpoint 1/4",
+                "transport.nextStop": "Next Stop",
+                "transport.warehouseA": "Warehouse A (45 min)",
+                "transport.vehicle": "Vehicle",
+                "transport.driver": "Driver",
+                "transport.totalDistance": "Total Distance",
+                "transport.currentSpeed": "Current Speed",
+                "transport.cropType": "Crop Type",
+                "transport.shimlaApples": "Shimla Apples",
+                "transport.liveFleetTracking": "Live Fleet Tracking",
+                "transport.filter": "Filter",
+                "transport.newShipment": "New Shipment",
+                
+                // Warehouse View
+                "warehouse.heroTitle": "Intelligent Cold Storage Monitoring",
+                "warehouse.heroSubtitle": "AI-driven storage platform reducing food waste through real-time monitoring and predictive analytics",
+                "warehouse.storageVitals": "Storage Vitals Monitoring",
+                "warehouse.temperature": "Temperature",
+                "warehouse.status.optimal": "Optimal",
+                "warehouse.status.acceptable": "Acceptable",
+                "warehouse.status.good": "Good",
+                "warehouse.status.withinRange": "Within Range",
+                "warehouse.optimalForApples": "Optimal for Shimla Apples",
+                "warehouse.idealRange": "Ideal Storage Range",
+                "warehouse.maxRecommended": "Maximum Recommended",
+                "warehouse.ambientAirRange": "Ambient Air Range",
+                "warehouse.tempSuggestion": "Temperature is optimal. Continue maintaining current settings for maximum shelf life.",
+                "warehouse.ethyleneSuggestion": "Ethylene levels are acceptable. Continue regular monitoring and filtration.",
+                "warehouse.humiditySuggestion": "Humidity is optimal. Continue maintaining current settings to prevent dehydration.",
+                "warehouse.co2Suggestion": "CO₂ levels are optimal. Maintain current ventilation for proper air exchange.",
+                "warehouse.ethyleneGas": "Ethylene Gas",
+                "warehouse.humidity": "Humidity",
+                "warehouse.co2Percentage": "CO₂ Percentage",
+                "warehouse.airQuality": "Air Quality Index",
+                "warehouse.goodAirQuality": "Good Air Quality",
+                "warehouse.airQualitySuggestion": "Air quality is good. Continue regular ventilation cycles for optimal storage conditions.",
+                "warehouse.storageAlerts": "STORAGE ALERTS",
+                "warehouse.storageConditions": "Storage Conditions Requiring Attention",
+                "warehouse.tempFluctuation": "Temperature Fluctuation",
+                "warehouse.tempFluctuationMessage": "Temperature variance of ±1.2°C detected in last 4 hours. May affect apple quality consistency.",
+                "warehouse.actionCalibrate": "ACTION: Calibrate cooling system",
+                "warehouse.energyConsumption": "Energy Consumption",
+                "warehouse.energyConsumptionMessage": "Energy usage increased by 18% compared to last week. Check for system inefficiencies.",
+                "warehouse.actionMaintenance": "ACTION: Schedule maintenance check",
+                "warehouse.doorActivity": "Door Activity",
+                "warehouse.doorActivityMessage": "High door activity detected (12 openings in 2 hours). This affects temperature stability.",
+                "warehouse.actionAccess": "ACTION: Review access protocols",
+                "warehouse.storageOptimization": "STORAGE OPTIMIZATION",
+                "warehouse.aiRecommendations": "AI Recommendations for Storage Efficiency",
+                "warehouse.tempOptimization": "Temperature Optimization",
+                "warehouse.tempStep1": "Check cooling system calibration in control room",
+                "warehouse.tempStep2": "Verify temperature sensors are functioning correctly",
+                "warehouse.tempStep3": "Adjust cooling cycles to reduce temperature variance",
+                "warehouse.tempStep4": "Implement zone-based temperature control if available",
+                "warehouse.tempResult": "Expected Result: Temperature stability within ±0.5°C",
+                "warehouse.energyEfficiency": "Energy Efficiency",
+                "warehouse.energyStep1": "Check compressor performance and refrigerant levels",
+                "warehouse.energyStep2": "Inspect insulation integrity in storage areas",
+                "warehouse.energyStep3": "Optimize defrost cycles based on humidity levels",
+                "warehouse.energyStep4": "Schedule energy-intensive operations during off-peak hours",
+                "warehouse.energyResult": "Expected Result: 12-15% reduction in energy consumption",
+                "warehouse.accessManagement": "Access Management",
+                "warehouse.accessStep1": "Review and update access protocols for staff",
+                "warehouse.accessStep2": "Install air curtains on frequently used doors",
+                "warehouse.accessStep3": "Implement batch retrieval system to reduce openings",
+                "warehouse.accessStep4": "Schedule inventory checks during low-activity periods",
+                "warehouse.accessResult": "Expected Result: 40% reduction in temperature fluctuations",
+                "warehouse.storageRiskAnalysis": "STORAGE RISK ANALYSIS: 12% Spoilage Probability",
+                "warehouse.storageImpact": "Storage Impact Assessment & Business Value",
+                "warehouse.currentSpoilageRisk": "Current Spoilage Risk (12%)",
+                "warehouse.projectedSpoilage": "Projected Spoilage (4%)",
+                "warehouse.storageBusinessImpact": "Storage Business Impact Analysis",
+                "warehouse.storageDetails": "Storage Details:",
+                "warehouse.spoilageReduction": "By implementing the Storage Optimization recommendations, we project a 67% reduction in spoilage risk.",
+                "warehouse.produceSaved": "1.6 tons of produce saved",
+                "warehouse.valuePreservation": "equivalent to ₹1,60,000 in value preservation",
+                "warehouse.storageLife": "Additional 30 days of optimal storage life achieved",
+                "warehouse.storageId": "Storage #CS-HYD-005 | Shimla Apples",
+                "warehouse.inStorage": "In Storage • 45 days remaining",
+                "warehouse.currentStatus": "Current Status",
+                "warehouse.optimalConditions": "Optimal Conditions",
+                "warehouse.storageDuration": "Storage Duration",
+                "warehouse.nextInspection": "Next Inspection",
+                "warehouse.in3Days": "In 3 days",
+                "warehouse.warehouse": "Warehouse",
+                "warehouse.hyderabadCold": "Hyderabad Cold Storage",
+                "warehouse.manager": "Manager",
+                "warehouse.totalCapacity": "Total Capacity",
+                "warehouse.currentStock": "Current Stock",
+                "warehouse.cropType": "Crop Type",
+                "warehouse.shimlaApples": "Shimla Apples",
+                
+                // Footer
+                "footer.intellichain": "IntelliChain",
+                "footer.aboutUs": "About Us",
+                "footer.careers": "Careers",
+                "footer.investors": "Investors",
+                "footer.ethics": "Ethics",
+                "footer.platform": "Platform",
+                "footer.fleetManagement": "Fleet Management",
+                "footer.coldStorage": "Cold Storage",
+                "footer.consumerTraceability": "Consumer Traceability",
+                "footer.apiDocumentation": "API Documentation",
+                "footer.resources": "Resources",
+                "footer.documentation": "Documentation",
+                "footer.helpCenter": "Help Center",
+                "footer.community": "Community",
+                "footer.partners": "Partners",
+                "footer.contact": "Contact",
+                "footer.support": "Support",
+                "footer.sales": "Sales",
+                "footer.media": "Media",
+                "footer.security": "Security",
+                "footer.copyright": "© 2023 IntelliChain Technologies. All rights reserved."
+            },
+            hi: {
+                // Navigation
+                "nav.transport": "परिवहन",
+                "nav.warehouse": "गोदाम",
+                "nav.signIn": "साइन इन करें",
+                "nav.getStarted": "शुरू करें",
+                
+                // Transport View - Hindi translations would go here
+                // For brevity, I'm showing the structure but not all translations
+                "transport.heroTitle": "बुद्धिमान आपूर्ति श्रृंखला",
+                "transport.heroSubtitle": "AI-संचालित लॉजिस्टिक्स प्लेटफ़ॉर्म वास्तविक-समय की निगरानी और भविष्य कहनेवाला विश्लेषण के माध्यम से खाद्य अपशिष्ट को कम करता है",
+                // ... more Hindi translations
+            },
+            te: {
+                // Navigation
+                "nav.transport": "రవాణా",
+                "nav.warehouse": "గోదామ్",
+                "nav.signIn": "సైన్ ఇన్",
+                "nav.getStarted": "ప్రారంభించండి",
+                
+                // Transport View - Telugu translations would go here
+                // For brevity, I'm showing the structure but not all translations
+                "transport.heroTitle": "ఇంటెలిజెంట్ సప్లై చైన్",
+                "transport.heroSubtitle": "AI-చోదిత లాజిస్టిక్స్ ప్లాట్ఫారం రియల్-టైమ్ మానిటరింగ్ మరియు ప్రెడిక్టివ్ అనాలిటిక్స్ ద్వారా ఆహార వ్యర్థాలను తగ్గిస్తుంది",
+                // ... more Telugu translations
+            }
+        };
+
+        // Current language
+        let currentLanguage = 'en';
+
+        // Crop data configuration
+        const cropData = {
+            apples: {
+                name: "Shimla Apples",
+                temperature: { current: "3.2°C", optimal: "0-4°C", status: "optimal" },
+                ethylene: { current: "0.8 PPM", optimal: "<1 PPM", status: "optimal" },
+                humidity: { current: "92%", optimal: "90-95%", status: "optimal" },
+                co2: { current: "0.04%", optimal: "0.03-0.05%", status: "optimal" },
+                airQuality: { current: "86", optimal: ">80", status: "optimal" },
+                suggestions: {
+                    temperature: "Temperature is optimal. Continue maintaining current settings for maximum shelf life.",
+                    ethylene: "Ethylene levels are acceptable. Continue regular monitoring and filtration.",
+                    humidity: "Humidity is optimal. Continue maintaining current settings to prevent dehydration.",
+                    co2: "CO₂ levels are optimal. Maintain current ventilation for proper air exchange.",
+                    airQuality: "Air quality is good. Continue regular ventilation cycles for optimal storage conditions."
+                },
+                alerts: [
+                    {
+                        title: "Temperature Fluctuation",
+                        message: "Temperature variance of ±1.2°C detected in last 4 hours. May affect apple quality consistency.",
+                        action: "ACTION: Calibrate cooling system"
+                    },
+                    {
+                        title: "Energy Consumption",
+                        message: "Energy usage increased by 18% compared to last week. Check for system inefficiencies.",
+                        action: "ACTION: Schedule maintenance check"
+                    },
+                    {
+                        title: "Door Activity",
+                        message: "High door activity detected (12 openings in 2 hours). This affects temperature stability.",
+                        action: "ACTION: Review access protocols"
+                    }
+                ],
+                riskAnalysis: {
+                    current: "2.4 tons",
+                    projected: "0.8 tons",
+                    details: "By implementing the Storage Optimization recommendations, we project a 67% reduction in spoilage risk.",
+                    produceSaved: "1.6 tons of produce saved",
+                    valuePreservation: "equivalent to ₹1,60,000 in value preservation"
+                },
+                freshness: {
+                    transport: {
+                        excellent: 24,
+                        medium: 48,
+                        low: 48,
+                        total: 120,
+                        current: 12
+                    },
+                    warehouse: {
+                        excellent: 15,
+                        medium: 30,
+                        low: 15,
+                        total: 60,
+                        current: 5
+                    }
+                }
+            },
+            bananas: {
+                name: "Cavendish Bananas",
+                temperature: { current: "14.2°C", optimal: "13-15°C", status: "optimal" },
+                ethylene: { current: "2.1 PPM", optimal: "<0.5 PPM", status: "high" },
+                humidity: { current: "88%", optimal: "85-95%", status: "optimal" },
+                co2: { current: "0.05%", optimal: "0.03-0.05%", status: "optimal" },
+                airQuality: { current: "82", optimal: ">80", status: "optimal" },
+                suggestions: {
+                    temperature: "Temperature is optimal for banana ripening. Maintain current settings.",
+                    ethylene: "Ethylene levels are high, accelerating ripening. Consider ventilation or scrubbing.",
+                    humidity: "Humidity is optimal. Continue current settings to prevent peel browning.",
+                    co2: "CO₂ levels are optimal. Maintain ventilation for proper air exchange.",
+                    airQuality: "Air quality is good. Monitor ethylene levels closely."
+                },
+                alerts: [
+                    {
+                        title: "Ethylene Buildup",
+                        message: "Ethylene levels at 2.1 PPM accelerating ripening process. May shorten shelf life.",
+                        action: "ACTION: Increase ventilation or activate scrubbers"
+                    },
+                    {
+                        title: "Ripening Stage",
+                        message: "Bananas entering rapid ripening phase. Consider adjusting temperature slightly.",
+                        action: "ACTION: Monitor color changes hourly"
+                    },
+                    {
+                        title: "Energy Consumption",
+                        message: "Energy usage increased by 18% compared to last week. Check for system inefficiencies.",
+                        action: "ACTION: Schedule maintenance check"
+                    }
+                ],
+                riskAnalysis: {
+                    current: "3.2 tons",
+                    projected: "1.2 tons",
+                    details: "High ethylene levels accelerating ripening. Implement scrubbing to extend shelf life.",
+                    produceSaved: "2.0 tons of produce saved",
+                    valuePreservation: "equivalent to ₹2,00,000 in value preservation"
+                },
+                freshness: {
+                    transport: {
+                        excellent: 12,
+                        medium: 24,
+                        low: 24,
+                        total: 60,
+                        current: 8
+                    },
+                    warehouse: {
+                        excellent: 7,
+                        medium: 14,
+                        low: 7,
+                        total: 28,
+                        current: 3
+                    }
+                }
+            },
+            tomatoes: {
+                name: "Cherry Tomatoes",
+                temperature: { current: "11.5°C", optimal: "10-13°C", status: "optimal" },
+                ethylene: { current: "1.2 PPM", optimal: "<1 PPM", status: "warning" },
+                humidity: { current: "92%", optimal: "90-95%", status: "optimal" },
+                co2: { current: "0.04%", optimal: "0.03-0.05%", status: "optimal" },
+                airQuality: { current: "84", optimal: ">80", status: "optimal" },
+                suggestions: {
+                    temperature: "Temperature is optimal for tomato storage. Maintain current range.",
+                    ethylene: "Ethylene levels slightly elevated. Monitor for accelerated ripening.",
+                    humidity: "Humidity is optimal. Prevents shriveling and maintains freshness.",
+                    co2: "CO₂ levels are optimal. Continue current ventilation settings.",
+                    airQuality: "Air quality is good. Regular monitoring recommended."
+                },
+                alerts: [
+                    {
+                        title: "Ethylene Levels",
+                        message: "Ethylene at 1.2 PPM may accelerate ripening. Consider ventilation adjustment.",
+                        action: "ACTION: Monitor ethylene levels closely"
+                    },
+                    {
+                        title: "Temperature Fluctuation",
+                        message: "Temperature variance of ±1.0°C detected. May affect tomato quality.",
+                        action: "ACTION: Calibrate cooling system"
+                    },
+                    {
+                        title: "Door Activity",
+                        message: "High door activity detected (12 openings in 2 hours). This affects temperature stability.",
+                        action: "ACTION: Review access protocols"
+                    }
+                ],
+                riskAnalysis: {
+                    current: "2.8 tons",
+                    projected: "1.0 tons",
+                    details: "Elevated ethylene levels accelerating ripening. Implement better ventilation.",
+                    produceSaved: "1.8 tons of produce saved",
+                    valuePreservation: "equivalent to ₹1,80,000 in value preservation"
+                },
+                freshness: {
+                    transport: {
+                        excellent: 18,
+                        medium: 36,
+                        low: 36,
+                        total: 90,
+                        current: 10
+                    },
+                    warehouse: {
+                        excellent: 10,
+                        medium: 20,
+                        low: 10,
+                        total: 40,
+                        current: 4
+                    }
+                }
+            },
+            potatoes: {
+                name: "Fresh Potatoes",
+                temperature: { current: "6.2°C", optimal: "4-8°C", status: "optimal" },
+                ethylene: { current: "0.3 PPM", optimal: "<0.5 PPM", status: "optimal" },
+                humidity: { current: "87%", optimal: "85-90%", status: "optimal" },
+                co2: { current: "0.06%", optimal: "0.03-0.07%", status: "optimal" },
+                airQuality: { current: "88", optimal: ">80", status: "optimal" },
+                suggestions: {
+                    temperature: "Temperature optimal for potato storage. Prevents sprouting.",
+                    ethylene: "Ethylene levels well within safe range for potatoes.",
+                    humidity: "Humidity slightly low. Increase to 88% to prevent shriveling.",
+                    co2: "CO₂ levels acceptable for potato storage.",
+                    airQuality: "Air quality excellent. Maintain current conditions."
+                },
+                alerts: [
+                    {
+                        title: "Humidity Level",
+                        message: "Humidity at 87% is slightly below optimal range for potatoes.",
+                        action: "ACTION: Increase humidity to 88-90%"
+                    },
+                    {
+                        title: "Sprouting Risk",
+                        message: "Temperature approaching upper limit. Monitor for early sprouting signs.",
+                        action: "ACTION: Check temperature stability"
+                    }
+                ],
+                riskAnalysis: {
+                    current: "1.8 tons",
+                    projected: "0.6 tons",
+                    details: "Good storage conditions with minor humidity adjustment needed.",
+                    produceSaved: "1.2 tons of produce saved",
+                    valuePreservation: "equivalent to ₹1,20,000 in value preservation"
+                },
+                freshness: {
+                    transport: {
+                        excellent: 48,
+                        medium: 96,
+                        low: 96,
+                        total: 240,
+                        current: 24
+                    },
+                    warehouse: {
+                        excellent: 30,
+                        medium: 60,
+                        low: 30,
+                        total: 120,
+                        current: 15
+                    }
+                }
+            },
+            grapes: {
+                name: "Thompson Grapes",
+                temperature: { current: "-0.5°C", optimal: "-1 to 0°C", status: "optimal" },
+                ethylene: { current: "0.4 PPM", optimal: "<0.5 PPM", status: "optimal" },
+                humidity: { current: "93%", optimal: "90-95%", status: "optimal" },
+                co2: { current: "0.08%", optimal: "0.05-0.1%", status: "optimal" },
+                airQuality: { current: "85", optimal: ">80", status: "optimal" },
+                suggestions: {
+                    temperature: "Temperature optimal for grape preservation. Maintain near freezing.",
+                    ethylene: "Ethylene levels well controlled. Essential for grape quality.",
+                    humidity: "High humidity perfect for preventing grape dehydration.",
+                    co2: "Elevated CO₂ beneficial for grape storage life extension.",
+                    airQuality: "Air quality excellent for delicate fruit storage."
+                },
+                alerts: [
+                    {
+                        title: "Temperature Critical",
+                        message: "Temperature approaching freezing point. Monitor for potential freezing damage.",
+                        action: "ACTION: Maintain temperature above -1°C"
+                    }
+                ],
+                riskAnalysis: {
+                    current: "1.2 tons",
+                    projected: "0.4 tons",
+                    details: "Excellent storage conditions for grapes. Minimal spoilage risk.",
+                    produceSaved: "0.8 tons of produce saved",
+                    valuePreservation: "equivalent to ₹80,000 in value preservation"
+                },
+                freshness: {
+                    transport: {
+                        excellent: 36,
+                        medium: 72,
+                        low: 72,
+                        total: 180,
+                        current: 18
+                    },
+                    warehouse: {
+                        excellent: 20,
+                        medium: 40,
+                        low: 20,
+                        total: 80,
+                        current: 8
+                    }
+                }
+            },
+            berries: {
+                name: "Fresh Berries",
+                temperature: { current: "1.2°C", optimal: "0-2°C", status: "optimal" },
+                ethylene: { current: "0.2 PPM", optimal: "<0.5 PPM", status: "optimal" },
+                humidity: { current: "94%", optimal: "90-95%", status: "optimal" },
+                co2: { current: "0.12%", optimal: "0.1-0.15%", status: "optimal" },
+                airQuality: { current: "87", optimal: ">80", status: "optimal" },
+                suggestions: {
+                    temperature: "Perfect temperature for berry freshness and mold prevention.",
+                    ethylene: "Very low ethylene levels ideal for delicate berries.",
+                    humidity: "High humidity essential for berry plumpness and freshness.",
+                    co2: "Elevated CO₂ helping extend berry shelf life significantly.",
+                    airQuality: "Air quality optimal for sensitive berry storage."
+                },
+                alerts: [
+                    {
+                        title: "Mold Risk",
+                        message: "High humidity combined with optimal temperature may increase mold risk.",
+                        action: "ACTION: Monitor for early mold signs"
+                    }
+                ],
+                riskAnalysis: {
+                    current: "2.0 tons",
+                    projected: "0.5 tons",
+                    details: "Excellent conditions for berry storage with extended shelf life.",
+                    produceSaved: "1.5 tons of produce saved",
+                    valuePreservation: "equivalent to ₹1,50,000 in value preservation"
+                },
+                freshness: {
+                    transport: {
+                        excellent: 8,
+                        medium: 16,
+                        low: 16,
+                        total: 40,
+                        current: 5
+                    },
+                    warehouse: {
+                        excellent: 5,
+                        medium: 10,
+                        low: 5,
+                        total: 20,
+                        current: 2
+                    }
+                }
+            }
+        };
+
+        // Current crop
+        let currentTransportCrop = 'apples';
+        let currentWarehouseCrop = 'apples';
+
+        // View Switching Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link[data-view]');
+            const viewContents = document.querySelectorAll('.view-content');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update active nav link
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding view
+                    const viewId = this.getAttribute('data-view') + '-view';
+                    viewContents.forEach(view => {
+                        view.classList.remove('active');
+                        if (view.id === viewId) {
+                            view.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // Language Selector Logic
+            const languageBtn = document.querySelector('.language-btn');
+            const languageDropdown = document.querySelector('.language-dropdown');
+            const languageOptions = document.querySelectorAll('.language-option');
+            const currentLanguageElement = document.getElementById('current-language');
+            
+            languageBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                languageDropdown.classList.toggle('active');
+            });
+            
+            languageOptions.forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const selectedLang = this.getAttribute('data-lang');
+                    
+                    // Update current language
+                    currentLanguage = selectedLang;
+                    
+                    // Update button text
+                    if (selectedLang === 'en') {
+                        currentLanguageElement.textContent = 'English';
+                    } else if (selectedLang === 'hi') {
+                        currentLanguageElement.textContent = 'हिन्दी';
+                    } else if (selectedLang === 'te') {
+                        currentLanguageElement.textContent = 'తెలుగు';
+                    }
+                    
+                    // Close dropdown
+                    languageDropdown.classList.remove('active');
+                    
+                    // Update all text content
+                    updateLanguage(selectedLang);
+                });
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                languageDropdown.classList.remove('active');
+            });
+            
+            // Initialize crop selectors
+            initializeCropSelector('transport');
+            initializeCropSelector('warehouse');
+            
+            // Initialize maps and charts for both views
+            initializeTransportView();
+            initializeWarehouseView();
+            
+            // Initialize freshness timelines
+            updateFreshnessTimeline('transport', currentTransportCrop);
+            updateFreshnessTimeline('warehouse', currentWarehouseCrop);
+        });
+
+        // Function to update language
+        function updateLanguage(lang) {
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+        }
+
+        function initializeCropSelector(type) {
+            const cropSelectorBtn = document.getElementById(`${type}CropSelectorBtn`);
+            const cropDropdown = document.getElementById(`${type}CropDropdown`);
+            const cropChevron = document.getElementById(`${type}CropChevron`);
+            const cropOptions = document.querySelectorAll(`#${type}CropDropdown .crop-option`);
+
+            // Toggle dropdown
+            cropSelectorBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                cropDropdown.classList.toggle('active');
+                cropSelectorBtn.classList.toggle('active');
+                cropChevron.style.transform = cropDropdown.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+            });
+
+            // Handle crop selection
+            cropOptions.forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const selectedCrop = this.getAttribute('data-crop');
+                    
+                    // Update active option
+                    cropOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update current crop
+                    if (type === 'transport') {
+                        currentTransportCrop = selectedCrop;
+                    } else {
+                        currentWarehouseCrop = selectedCrop;
+                    }
+                    
+                    // Update button content
+                    updateCropButton(type, selectedCrop);
+                    
+                    // Close dropdown
+                    cropDropdown.classList.remove('active');
+                    cropSelectorBtn.classList.remove('active');
+                    cropChevron.style.transform = 'rotate(0)';
+                    
+                    // Update all content with animation
+                    updateCropContent(type, selectedCrop);
+                    
+                    // Update freshness timeline
+                    updateFreshnessTimeline(type, selectedCrop);
+                });
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                cropDropdown.classList.remove('active');
+                cropSelectorBtn.classList.remove('active');
+                cropChevron.style.transform = 'rotate(0)';
+            });
+        }
+
+        function updateCropButton(type, cropType) {
+            const crop = cropData[cropType];
+            const currentCropName = document.getElementById(`${type}CurrentCropName`);
+            const currentCropDetails = document.getElementById(`${type}CurrentCropDetails`);
+            
+            // Add animation to button
+            const cropSelectorBtn = document.getElementById(`${type}CropSelectorBtn`);
+            cropSelectorBtn.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                currentCropName.textContent = crop.name;
+                currentCropDetails.textContent = 'Optimal conditions active';
+                cropSelectorBtn.style.transform = 'scale(1)';
+            }, 150);
+        }
+
+        function updateCropContent(type, cropType) {
+            const crop = cropData[cropType];
+            
+            // Add updating class to content areas
+            const contentAreas = document.querySelectorAll(`#${type}-view .vital-card-sidebyside, #${type}-view .optimal-card-sidebyside`);
+            contentAreas.forEach(area => {
+                area.classList.add('content-updating');
+            });
+
+            // Update content after a brief delay for animation
+            setTimeout(() => {
+                // Update temperature
+                updateVitalCard(type, 'temperature', crop.temperature, crop.suggestions.temperature);
+                
+                // Update ethylene
+                updateVitalCard(type, 'ethylene', crop.ethylene, crop.suggestions.ethylene);
+                
+                // Update humidity
+                updateVitalCard(type, 'humidity', crop.humidity, crop.suggestions.humidity);
+                
+                // Update CO2
+                updateVitalCard(type, 'co2', crop.co2, crop.suggestions.co2);
+                
+                // Update air quality (warehouse only)
+                if (type === 'warehouse') {
+                    updateVitalCard(type, 'airQuality', crop.airQuality, crop.suggestions.airQuality);
+                }
+                
+                // Update alerts if they exist for this crop
+                if (crop.alerts) {
+                    updateAlerts(type, crop.alerts);
+                }
+                
+                // Update risk analysis if it exists for this crop
+                if (crop.riskAnalysis) {
+                    updateRiskAnalysis(type, crop.riskAnalysis);
+                }
+                
+                // Update storage/shipment info
+                updateStorageInfo(type, crop.name);
+                
+                // Remove updating class and add updated animation
+                contentAreas.forEach(area => {
+                    area.classList.remove('content-updating');
+                    area.classList.add('content-updated');
+                    
+                    // Remove the updated class after animation completes
+                    setTimeout(() => {
+                        area.classList.remove('content-updated');
+                    }, 600);
+                });
+                
+            }, 300);
+        }
+
+        function updateVitalCard(type, vitalType, data, suggestion) {
+            // Update current value
+            const vitalValue = document.getElementById(`${type}${vitalType.charAt(0).toUpperCase() + vitalType.slice(1)}Value`);
+            if (vitalValue) {
+                vitalValue.textContent = data.current;
+            }
+            
+            // Update status with animation
+            const vitalStatus = document.getElementById(`${type}${vitalType.charAt(0).toUpperCase() + vitalType.slice(1)}Status`);
+            if (vitalStatus) {
+                vitalStatus.classList.add('status-changing');
+                setTimeout(() => {
+                    vitalStatus.textContent = getStatusText(data.status);
+                    vitalStatus.className = 'vital-status-sidebyside ' + getStatusClass(data.status);
+                    vitalStatus.classList.remove('status-changing');
+                }, 200);
+            }
+            
+            // Update optimal title
+            const optimalTitle = document.getElementById(`${type}Optimal${vitalType.charAt(0).toUpperCase() + vitalType.slice(1)}Title`);
+            if (optimalTitle) {
+                const crop = type === 'transport' ? cropData[currentTransportCrop] : cropData[currentWarehouseCrop];
+                optimalTitle.textContent = 'Optimal for ' + crop.name;
+            }
+            
+            // Update optimal value
+            const optimalValue = document.getElementById(`${type}Optimal${vitalType.charAt(0).toUpperCase() + vitalType.slice(1)}Value`);
+            if (optimalValue) {
+                optimalValue.textContent = data.optimal;
+            }
+            
+            // Update optimal status
+            const optimalStatus = document.getElementById(`${type}Optimal${vitalType.charAt(0).toUpperCase() + vitalType.slice(1)}Status`);
+            if (optimalStatus) {
+                optimalStatus.classList.add('status-changing');
+                setTimeout(() => {
+                    optimalStatus.textContent = getOptimalStatusText(data.status);
+                    optimalStatus.className = 'optimal-status-sidebyside ' + getOptimalStatusClass(data.status);
+                    optimalStatus.classList.remove('status-changing');
+                }, 200);
+            }
+            
+            // Update suggestion
+            const suggestionElement = document.getElementById(`${type}${vitalType.charAt(0).toUpperCase() + vitalType.slice(1)}Suggestion`);
+            if (suggestionElement) {
+                suggestionElement.textContent = suggestion;
+            }
+        }
+
+        function updateAlerts(type, alerts) {
+            const alertsGrid = document.getElementById(`${type}AlertsGrid`);
+            
+            // Clear existing alerts
+            alertsGrid.innerHTML = '';
+            
+            // Add new alerts with animation
+            alerts.forEach((alert, index) => {
+                const alertCard = document.createElement('div');
+                alertCard.className = 'alert-card';
+                alertCard.style.animationDelay = `${index * 0.1}s`;
+                alertCard.innerHTML = `
+                    <div class="alert-header">
+                        <div class="alert-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="alert-title">${alert.title}</div>
+                    </div>
+                    <div class="alert-message">${alert.message}</div>
+                    <div class="alert-action">
+                        <i class="fas fa-bolt"></i>
+                        <span>${alert.action}</span>
+                    </div>
+                `;
+                alertsGrid.appendChild(alertCard);
+            });
+        }
+
+        function updateRiskAnalysis(type, riskData) {
+            const currentRisk = document.getElementById(`${type}CurrentRisk`);
+            const projectedRisk = document.getElementById(`${type}ProjectedRisk`);
+            const riskDetails = document.getElementById(`${type}RiskDetails`);
+            const produceSaved = document.getElementById(`${type}ProduceSaved`);
+            const valuePreservation = document.getElementById(`${type}ValuePreservation`);
+            const storageDetails = document.getElementById(`${type}StorageDetails`);
+            const shipmentDetails = document.getElementById(`${type}ShipmentDetails`);
+            
+            if (currentRisk) {
+                currentRisk.textContent = riskData.current;
+            }
+            
+            if (projectedRisk) {
+                projectedRisk.textContent = riskData.projected;
+            }
+            
+            if (riskDetails) {
+                riskDetails.textContent = riskData.details;
+            }
+            
+            if (produceSaved) {
+                produceSaved.textContent = riskData.produceSaved;
+            }
+            
+            if (valuePreservation) {
+                valuePreservation.textContent = riskData.valuePreservation;
+            }
+            
+            if (storageDetails) {
+                const crop = type === 'transport' ? cropData[currentTransportCrop] : cropData[currentWarehouseCrop];
+                storageDetails.textContent = `20-ton ${crop.name} Cold Storage Unit`;
+            }
+            
+            if (shipmentDetails) {
+                const crop = cropData[currentTransportCrop];
+                shipmentDetails.textContent = `20-ton ${crop.name} Truck`;
+            }
+        }
+
+        function updateStorageInfo(type, cropName) {
+            const storageCropName = document.getElementById(`${type}StorageCropName`);
+            const shipmentCropName = document.getElementById(`${type}ShipmentCropName`);
+            const detailCropType = document.getElementById(`${type}DetailCropType`);
+            
+            if (storageCropName) {
+                storageCropName.textContent = cropName;
+            }
+            
+            if (shipmentCropName) {
+                shipmentCropName.textContent = cropName;
+            }
+            
+            if (detailCropType) {
+                detailCropType.textContent = cropName;
+            }
+        }
+
+        function updateFreshnessTimeline(type, cropType) {
+            const crop = cropData[cropType];
+            const freshness = crop.freshness[type];
+            
+            const excellentSegment = document.getElementById(`${type}ExcellentSegment`);
+            const mediumSegment = document.getElementById(`${type}MediumSegment`);
+            const lowSegment = document.getElementById(`${type}LowSegment`);
+            const currentMarker = document.getElementById(`${type}CurrentMarker`);
+            const excellentTime = document.getElementById(`${type}ExcellentTime`);
+            const mediumTime = document.getElementById(`${type}MediumTime`);
+            const lowTime = document.getElementById(`${type}LowTime`);
+            const currentStatus = document.getElementById(`${type}CurrentStatus`);
+            const statusText = document.getElementById(`${type}StatusText`);
+            
+            // Calculate percentages
+            const excellentPercent = (freshness.excellent / freshness.total) * 100;
+            const mediumPercent = (freshness.medium / freshness.total) * 100;
+            const lowPercent = (freshness.low / freshness.total) * 100;
+            const currentPercent = (freshness.current / freshness.total) * 100;
+            
+            // Update segment widths
+            excellentSegment.style.width = `${excellentPercent}%`;
+            mediumSegment.style.width = `${mediumPercent}%`;
+            mediumSegment.style.left = `${excellentPercent}%`;
+            lowSegment.style.width = `${lowPercent}%`;
+            lowSegment.style.left = `${excellentPercent + mediumPercent}%`;
+            
+            // Update current marker position
+            currentMarker.style.left = `${currentPercent}%`;
+            
+            // Update time labels
+            if (type === 'transport') {
+                excellentTime.textContent = `0-${freshness.excellent}h`;
+                mediumTime.textContent = `${freshness.excellent}-${freshness.excellent + freshness.medium}h`;
+                lowTime.textContent = `${freshness.excellent + freshness.medium}-${freshness.total}h`;
+            } else {
+                excellentTime.textContent = `0-${freshness.excellent}d`;
+                mediumTime.textContent = `${freshness.excellent}-${freshness.excellent + freshness.medium}d`;
+                lowTime.textContent = `${freshness.excellent + freshness.medium}-${freshness.total}d`;
+            }
+            
+            // Update current status
+            let status, statusClass, timeUnit;
+            
+            if (type === 'transport') {
+                timeUnit = 'hours';
+            } else {
+                timeUnit = 'days';
+            }
+            
+            if (freshness.current <= freshness.excellent) {
+                status = 'Excellent';
+                statusClass = 'status-excellent';
+            } else if (freshness.current <= freshness.excellent + freshness.medium) {
+                status = 'Medium';
+                statusClass = 'status-medium';
+            } else {
+                status = 'Low';
+                statusClass = 'status-low';
+            }
+            
+            // Update status dot
+            const statusDot = currentStatus.querySelector('.status-dot');
+            statusDot.className = 'status-dot ' + statusClass;
+            
+            // Update status text
+            statusText.textContent = `Current: ${status} Quality (${freshness.current} ${timeUnit} elapsed)`;
+        }
+
+        function getStatusText(status) {
+            switch(status) {
+                case 'optimal': return 'Optimal';
+                case 'high': return 'High';
+                case 'warning': return 'Warning';
+                default: return 'Optimal';
+            }
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'optimal': return 'status-optimal';
+                case 'high': return 'status-high';
+                case 'warning': return 'status-warning';
+                default: return 'status-optimal';
+            }
+        }
+
+        function getOptimalStatusText(status) {
+            switch(status) {
+                case 'optimal': return 'Within Range';
+                case 'high': return 'Out of Range';
+                case 'warning': return 'Attention';
+                default: return 'Within Range';
+            }
+        }
+
+        function getOptimalStatusClass(status) {
+            switch(status) {
+                case 'optimal': return 'status-within-range';
+                case 'high': return 'status-out-of-range';
+                case 'warning': return 'status-attention';
+                default: return 'status-within-range';
+            }
+        }
+
+        // Initialize Transport View
+        function initializeTransportView() {
+            // Initialize Map with Dark Theme
+            const map = L.map('map').setView([19.9975, 73.7898], 7);
+            
+            // Use a dark map tile layer
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+
+            // Add route markers
+            const nashik = L.marker([19.9975, 73.7898]).addTo(map)
+                .bindPopup('<strong>Origin: Nashik, Maharashtra</strong><br>Shipment #NSK-HYD-007<br>Departure: 08:00 AM');
+            
+            const hyderabad = L.marker([17.3850, 78.4867]).addTo(map)
+                .bindPopup('<strong>Destination: Hyderabad, Telangana</strong><br>ETA: 4h 30m<br>Arrival: 12:30 PM');
+
+            // Add a moving truck marker
+            const truckIcon = L.divIcon({
+                html: '<div style="background: #0071e3; color: white; padding: 10px; border-radius: 50%; font-size: 1.2rem; box-shadow: 0 0 20px rgba(0, 113, 227, 0.5);">🚛</div>',
+                iconSize: [40, 40],
+                className: 'truck-marker'
+            });
+            
+            const truckMarker = L.marker([19.0, 76.0], {icon: truckIcon}).addTo(map)
+                .bindPopup('<strong>Shipment #NSK-HYD-007</strong><br>In Transit<br>Current Speed: 65 km/h');
+
+            // Add route line
+            const route = L.polyline([
+                [19.9975, 73.7898],
+                [19.5, 75.0],
+                [19.0, 76.0],
+                [18.5, 77.0],
+                [17.3850, 78.4867]
+            ], {color: '#30d158', weight: 4, opacity: 0.7}).addTo(map);
+
+            map.fitBounds(route.getBounds());
+
+            // Initialize Mini Charts with Dark Theme
+            function createMiniChart(canvasId, data, color) {
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                return new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: 10}, (_, i) => ''),
+                        datasets: [{
+                            data: data,
+                            borderColor: color,
+                            backgroundColor: color + '20',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { 
+                                display: false,
+                                grid: { color: 'rgba(255,255,255,0.1)' }
+                            },
+                            y: { 
+                                display: false,
+                                grid: { color: 'rgba(255,255,255,0.1)' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Generate sensor data for all charts
+            createMiniChart('tempChart', [12, 13, 13.5, 14, 13.8, 13.2, 13.5, 13.6, 13.4, 13.5], '#30d158');
+            createMiniChart('ethyleneChart', [2.1, 2.5, 3.2, 3.8, 4.2, 4.5, 4.7, 4.6, 4.5, 4.7], '#ff453a');
+            createMiniChart('shockChart', [0.1, 0.15, 0.3, 0.25, 0.2, 0.18, 0.22, 0.19, 0.21, 0.2], '#0071e3');
+            createMiniChart('humidityChart', [65, 66, 67, 68, 67.5, 67, 67.8, 68, 67.6, 68], '#ff9f0a');
+            createMiniChart('co2Chart', [0.03, 0.035, 0.04, 0.038, 0.042, 0.04, 0.039, 0.04, 0.039, 0.04], '#bf5af2');
+
+            // Simulate real-time updates
+            setInterval(() => {
+                // Update sensor values
+                const tempElement = document.querySelector('#transport-view .vital-row:nth-child(1) .vital-value-sidebyside');
+                if (tempElement) {
+                    tempElement.innerText = (13.5 + (Math.random() - 0.5)).toFixed(1) + '°C';
+                }
+                
+                // Move truck marker
+                const bounds = route.getBounds();
+                const lat = bounds.getNorth() - Math.random() * 0.5;
+                const lng = bounds.getWest() + Math.random() * 0.5;
+                truckMarker.setLatLng([lat, lng]);
+            }, 4000);
+        }
+
+        // Initialize Warehouse View
+        function initializeWarehouseView() {
+            // Initialize Warehouse Charts
+            function createMiniChart(canvasId, data, color) {
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                return new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: 10}, (_, i) => ''),
+                        datasets: [{
+                            data: data,
+                            borderColor: color,
+                            backgroundColor: color + '20',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { 
+                                display: false,
+                                grid: { color: 'rgba(255,255,255,0.1)' }
+                            },
+                            y: { 
+                                display: false,
+                                grid: { color: 'rgba(255,255,255,0.1)' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Generate warehouse sensor data
+            createMiniChart('tempChartWarehouse', [2.8, 3.0, 3.1, 3.2, 3.1, 3.0, 3.2, 3.1, 3.0, 3.2], '#30d158');
+            createMiniChart('ethyleneChartWarehouse', [0.7, 0.75, 0.8, 0.78, 0.82, 0.8, 0.79, 0.81, 0.8, 0.8], '#0071e3');
+            createMiniChart('humidityChartWarehouse', [91, 91.5, 92, 91.8, 92.2, 92, 91.9, 92.1, 92, 92], '#ff9f0a');
+            createMiniChart('co2ChartWarehouse', [0.035, 0.038, 0.04, 0.039, 0.041, 0.04, 0.039, 0.04, 0.039, 0.04], '#bf5af2');
+            createMiniChart('airQualityChart', [84, 85, 86, 85.5, 86.5, 86, 85.8, 86.2, 86, 86], '#30d158');
+        }
+    </script>
+</body>
+</html>
